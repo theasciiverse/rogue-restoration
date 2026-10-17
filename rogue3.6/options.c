@@ -220,6 +220,8 @@ WINDOW *win;
 		sp += strlen(home);
 		continue;
 	    }
+	if (sp >= &buf[sizeof buf - 1])	/* Asciiverse: buf is full */
+	    continue;
 	*sp++ = c;
 	waddstr(win, unctrl(c));
     }
