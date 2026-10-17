@@ -35,11 +35,13 @@ def take():
             return -1
         bot.act(descend=r.elapsed() > 20)
     r.pump(1.0)
-    r.key("\x07", 0.4)         # out of any question
-    for _ in range(6):          # clear any --More-- first
-        if "More" not in r.text():
+    for _ in range(8):          # out of any page or question first
+        if "More" in r.text() or "SPACE" in r.text():
+            r.key(" ", 0.4)
+        elif "for all" in r.text() or r.text().split("\n")[3].rstrip().endswith("?"):
+            r.key("\x07", 0.4)
+        else:
             break
-        r.key(" ", 0.4)
     r.key("Q", 0.8)
     r.key("y", 1.5)
     for _ in range(6):          # the pack, page by page, then the scores
