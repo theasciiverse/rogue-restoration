@@ -10,8 +10,9 @@ Explorer.act() makes one move, the way NetBSD rogue's driver does
 (theasciiverse/netbsd-games, asciiverse/record/rogue.py): answer a
 --More--, hit a monster beside the hero, rest when hurt, else walk to the
 nearest item, a door not yet visited, the open end of a corridor, or,
-once it is time to go down, the stairs. It only ever steps across or up
-and down, which is always allowed; diagonals are used for fighting. When
+once it is time to go down, the stairs. It steps diagonally too, where
+both cells beside the step are open and neither end is a doorway, as the
+games allow. When
 nothing is left to explore it searches for hidden doors, and takes the
 stairs if it sees them.
 """
@@ -26,7 +27,8 @@ class Explorer:
     def __init__(self, r, items="*!?:)]/=,", walk=".#+%", stairs="%",
                  monster=str.isupper, more=("--More--", "-more-", "--more--", "-- More --"),
                  status_row=23, hp=r"Hpt?: *(\d+)\( *(\d+)\)", rest="s",
-                 down=">", top=1, bottom=22, oy=OY, ox=OX, cancel="\x1b"):
+                 down=">", top=1, bottom=22, oy=OY, ox=OX, cancel="\x1b", pickup=None,
+                 pile="*"):
         self.r = r
         self.items = set(items)
         self.walk = set(walk) | self.items
@@ -48,10 +50,16 @@ class Explorer:
         self.stuck_diag = None  # a diagonal blow that did nothing
         self.waits = 0          # turns waited for it
         self.escaped = None     # the last question answered with cancel
-        # the answer to a question: Escape, or for UltraRogue, which takes
-        # Escape and a key soon after as Alt and the key, "*" and Return
-        # to "Which one do you want to pick up? [* for all]"
+        # the answer to a question (Escape, or "n"), and to "which of
+        # these to pick up (* for all)" ("*", with Return where the game
+        # reads a line)
         self.cancel = cancel
+        self.pile = pile
+        # items it has stood on, which it no longer walks to, and the key
+        # that picks one up where the game does not do it by walking on
+        self.done_items = set()
+        self.pickup = pickup
+        self.prev = None
         self.blows = 0          # fights that showed a hit or a miss
         self.first_level = None
 
@@ -87,8 +95,12 @@ class Explorer:
                 while seen[(y, x)] != start:
                     y, x = seen[(y, x)]
                 return (y - start[0], x - start[1])
-            for dy, dx in STEPS:
+            for dy, dx in list(STEPS) + list(DIAG):
                 ny, nx = y + dy, x + dx
+                if dy and dx and (g[y][x] == "+" or not (self.top <= ny <= self.bottom and 0 <= nx < 80)
+                                  or g[ny][nx] == "+" or g[y][nx] not in self.walk
+                                  or g[ny][x] not in self.walk):
+                    continue    # diagonally only across open ground, not doorways
                 if (self.top <= ny <= self.bottom and 0 <= nx < 80
                         and (ny, nx) not in seen
                         and (g[ny][nx] in self.walk or (ny, nx) == self.stairs_at
@@ -117,10 +129,14 @@ class Explorer:
         if self.has_more(g):
             r.key(" ", 0.15)
             return "more"
-        top = " ".join(g[:2])
-        if (g[0].rstrip().endswith("?") or "[* for all]" in top) and top != self.escaped:
-            r.key(self.cancel, 0.2)  # a question (which item to pick up)
+        top = " ".join(g[:3])
+        if "* for all" in top and top != self.escaped:
+            r.key(self.pile, 0.3)   # which of a pile to pick up: all
             self.escaped = top      # once: the game may leave it on screen
+            return "pick up all"
+        if g[0].rstrip().endswith("?") and top != self.escaped:
+            r.key(self.cancel, 0.2)  # any other question: no
+            self.escaped = top
             return "escape"
         lv = self.level(g)
         if lv is not None:
@@ -129,6 +145,7 @@ class Explorer:
             if lv - self.first_level > self.levels:
                 self.levels = lv - self.first_level
                 self.visited.clear()
+                self.done_items.clear()
                 self.stairs_at = None
         me = self.find(g, "@")
         if me is None:
@@ -137,6 +154,13 @@ class Explorer:
         if me != self.last:
             self.searches = 0
         self.last = me
+        prev, self.prev = self.prev, g
+        if prev is not None and prev[me[0]][me[1]] in self.items and me not in self.done_items:
+            self.done_items.add(me)
+            if self.pickup:
+                r.key(self.pickup, 0.3)
+                self.escaped = None     # its question may come again
+                return "pick up"
         self.visited[me] += 1
         y, x = me
         foe = next(((dy, dx) for dy in (-1, 0, 1) for dx in (-1, 0, 1)
@@ -181,6 +205,7 @@ class Explorer:
         def take_stairs():
             r.key(self.down, 0.5)
             self.visited.clear()
+            self.done_items.clear()
             self.stairs_at = None
             return "stairs"
 
@@ -193,11 +218,12 @@ class Explorer:
         if descend and self.stairs_at:
             step = self.path_to(g, me, lambda fy, fx: (fy, fx) == self.stairs_at, True)
         if step is None:
-            step = self.path_to(g, me, lambda fy, fx: g[fy][fx] in self.items)
+            step = self.path_to(g, me, lambda fy, fx: g[fy][fx] in self.items
+                                and (fy, fx) not in self.done_items)
         if step is None:
-            step = self.path_to(g, me, lambda fy, fx: g[fy][fx] == "+" and self.visited[(fy, fx)] == 0)
+            step = self.path_to(g, me, lambda fy, fx: g[fy][fx] == "+" and self.visited[(fy, fx)] == 0, True)
         if step is None:
-            step = self.path_to(g, me, frontier)
+            step = self.path_to(g, me, frontier, True)
         if step is None and me == self.stairs_at:
             return take_stairs()
         if step is None and seen:
@@ -217,5 +243,5 @@ class Explorer:
             self.visited[me] = 0
             r.key(random.choice("hjkl"), 0.12)
             return "wander"
-        r.key(STEPS[step], 0.11)
+        r.key(STEPS.get(step) or DIAG[step], 0.11)
         return "move"

@@ -2,9 +2,9 @@
 
 The driver picks the fighter, does not keep it as a saved character and
 leaves Friendly Fiend's Flea Market, where every game starts. UltraRogue
-has monsters in both cases, and the hero picks up whole piles ("*" to
-its question, since UltraRogue reads Escape and a key soon after as Alt
-and the key). Otherwise the shared Explorer (rlbot.py) plays it as it plays
+has monsters in both cases, the hero picks up whole piles ("*" and
+Return), and ^G answers other questions, since UltraRogue reads Escape
+and a key soon after as Alt and the key. Otherwise the shared Explorer (rlbot.py) plays it as it plays
 Rogue: items, doors, corridors, fights, rest when hurt, and after about
 20 seconds the stairs. After about 48 seconds it quits (Q, y), and the
 cast ends on the top ten. A take where the hero
@@ -28,7 +28,7 @@ def take():
     r.key("l", 0.8)
     r.wait_for("Lvl:", 8)
     r.pump(1.0)
-    bot = rlbot.Explorer(r, monster="alpha", cancel="*\r")
+    bot = rlbot.Explorer(r, monster="alpha", pile="*\r", cancel="\x07")
     while r.elapsed() < 48:
         if "REST" in r.text() or "Top Ten" in r.text():
             r.finish(b"\r")

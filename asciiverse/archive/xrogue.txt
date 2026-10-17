@@ -1,0 +1,4 @@
+# xrogue: XRogue 8.0, its guide and its BSD licence
+out/xrogue
+xrogue/xrogue80.doc -> guide.txt
+xrogue/LICENSE -> LICENSE
