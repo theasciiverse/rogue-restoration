@@ -1,0 +1,4 @@
+# arogue: Advanced Rogue 5.8, its guide and its licence
+out/arogue
+arogue5.8/arogue58.doc -> guide.txt
+arogue5.8/LICENSE.TXT -> LICENSE
