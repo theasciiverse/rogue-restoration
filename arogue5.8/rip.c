@@ -39,7 +39,7 @@ struct sc_ent {
     unsigned long	sc_score;
     char	sc_name[LINELEN];
     char	sc_system[SYSLEN];
-    char	sc_login[LOGLEN];
+    char	sc_login[LINELEN];	/* Asciiverse: the score file has LINELEN */
     short	sc_flgs;
     short	sc_level;
     short	sc_ctype;
@@ -588,7 +588,7 @@ int fd;
         encread((char *) &scores[i].sc_system, SYSLEN, fd);
         encread((char *) &scores[i].sc_login, LINELEN, fd);
         encread((char *) scoreline, 100, fd);
-        sscanf(scoreline, " %lu %d %d %d %d %d \n",
+        sscanf(scoreline, " %lu %hd %hd %hd %hd %hd \n",	/* Asciiverse: shorts */
         &scores[i].sc_score,   &scores[i].sc_flgs,
         &scores[i].sc_level,   &scores[i].sc_ctype,
         &scores[i].sc_monster, &scores[i].sc_quest);
