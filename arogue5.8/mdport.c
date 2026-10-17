@@ -370,7 +370,7 @@ md_shellescape()
          */
         setuid(getuid());
         setgid(getgid());
-        execl(sh == NULL ? "/bin/sh" : sh, "shell", "-i", 0);
+        execl(sh == NULL ? "/bin/sh" : sh, "shell", "-i", (char *) NULL); /* Asciiverse */
         perror("No shelly");
         _exit(-1);
     }
@@ -414,7 +414,7 @@ md_getroguedir()
     {
         if (*home)
         {
-            strncpy(path, home, PATH_MAX - 20);
+            strncpy(path, home, sizeof(path) - 20);	/* Asciiverse: was PATH_MAX - 20 */
 
             end = &path[strlen(path)-1];
 

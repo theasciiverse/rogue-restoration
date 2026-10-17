@@ -202,7 +202,7 @@ bool display;	/* is TRUE, display unconditionally */
     register struct stats *stat_ptr, *max_ptr;
     register int oy = 0, ox = 0, temp;
     register char *pb;
-    static char buf[LINELEN];
+    static char buf[512];		/* Asciiverse: a full line can be longer than 80 */
     static int hpwidth = 0, s_hungry = -1;
     static int s_lvl = -1, s_pur, s_hp = -1, s_str, maxs_str, 
 		s_ac = 0;
