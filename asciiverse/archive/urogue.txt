@@ -1,0 +1,5 @@
+# urogue: UltraRogue, its manual page, its notes on options and its licence
+out/urogue
+urogue/urogue.6
+urogue/README -> README.txt
+urogue/LICENSE.TXT -> LICENSE
