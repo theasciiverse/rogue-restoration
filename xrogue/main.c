@@ -41,26 +41,28 @@ main(int argc, char **argv, char **envp)
     /*
      * get home and options from environment
      */
+    /* Asciiverse: cut to fit home[] */
     if ((env = getenv("HOME")) != NULL)
-        strcpy(home, env);
+        strncpy(home, env, LINELEN - 2);
     else
-        strcpy(home, md_gethomedir());
+        strncpy(home, md_gethomedir(), LINELEN - 2);
+    home[LINELEN - 2] = '\0';
     strcat(home, "/");
 
-    /* Get default save file */
-    strcpy(file_name, home);
-    strcat(file_name, "xrogue.save");
+    /* Asciiverse: the saved game is in the player's data folder */
+    strncpy(file_name, av_datafile("xrogue", "xrogue.save"), 1023);
 #else
     strcpy(file_name, "\\rogue.sav");
 #endif
 
     /* Get default score file */
-    strcpy(score_file, SCOREFILE);
+    /* Asciiverse: so is the score file */
+    strncpy(score_file, av_datafile("xrogue", "xrogue.scr"), 1023);
 
     if ((env = getenv("ROGUEOPTS")) != NULL)
         parse_opts(env);
     if (env == NULL || whoami[0] == '\0') {
-        strcpy(whoami, md_getusername());
+        strncpy(whoami, md_getusername(), LINELEN - 1);
      }
   /*
      * check for print-score option

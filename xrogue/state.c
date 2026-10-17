@@ -3050,9 +3050,13 @@ md_getusername()
 #if !defined(_WIN32) && !defined(DJGPP)
     struct passwd *pw;
 
-    pw = getpwuid(getuid());
-
-    l = pw->pw_name;
+    /* Asciiverse: $LOGNAME and $USER before the password database */
+    if (((l = getenv("LOGNAME")) == NULL || *l == '\0') &&
+        ((l = getenv("USER")) == NULL || *l == '\0'))
+    {
+        pw = getpwuid(getuid());
+        l = pw != NULL ? pw->pw_name : NULL;
+    }
 #endif
 
     if ((l == NULL) || (*l == '\0'))
