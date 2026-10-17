@@ -633,7 +633,7 @@ shell()
 	if (pid == 0) {
 		setuid(playuid);	/* Set back to original user */
 		setgid(playgid);
-		execl(sh == NULL ? "/bin/sh" : sh, "shell", "-i", 0);
+		execl(sh == NULL ? "/bin/sh" : sh, "shell", "-i", (char *) NULL); /* Asciiverse: a pointer */
 		perror("No shelly");
 		byebye(-1);
 	}

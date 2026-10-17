@@ -19,6 +19,9 @@
 #include "rogue.h"
 #include "rogue.ext"
 
+/* Asciiverse: they return pointers, which an int would cut in half */
+char *charge_str(), *ring_num();
+
 
 /*
  * inv_name:

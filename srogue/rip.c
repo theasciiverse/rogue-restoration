@@ -245,8 +245,8 @@ int showname;
 	printf("Top Ten Adventurers:\nRank\tScore\tName\n");
 	for (scp = top_ten; scp <= &top_ten[9]; scp++) {
 		if (scp->sc_score > 0) {
-			printf("%d\t%d\t%s: %s\t\t--> %s on level %d",
-			  scp - top_ten + 1, scp->sc_score, scp->sc_name,
+			printf("%d\t%d\t%s: %s\t\t--> %s on level %d", (int)
+			  (scp - top_ten + 1), scp->sc_score, scp->sc_name,
 			  ctime(&scp->sc_date), reason[scp->sc_flags],
 			  scp->sc_level);
 			if (scp->sc_flags == KILLED) {
