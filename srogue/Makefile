@@ -74,6 +74,10 @@ dist.irix:
 	tar cf $(DISTNAME)-irix.tar $(PROGRAM) LICENSE.TXT $(PROGRAM).doc
 	gzip -f $(DISTNAME)-irix.tar
 
+debug.aix:
+	make clean
+	make CC=xlc CFLAGS="-qmaxmem=16768 -g -DWIZARD  -qstrict" $(PROGRAM)
+
 dist.aix:
 	make clean
 	make CC=xlc CFLAGS="-qmaxmem=16768 -O3 -qstrict" $(PROGRAM)

@@ -161,6 +161,10 @@ FILE *savef;
 	int slines = LINES;
 	int scols = COLS;
 
+#ifdef __DJGPP__                      /* st_ino w/ DJGPP under WinXP broken */
+        _djstat_flags |= _STAT_INODE; /* so turn off computing it for now   */
+#endif
+
 	/*
 	 * force allocation of the buffer now so that inodes, etc
 	 * can be checked when restoring saved games.
@@ -169,7 +173,6 @@ FILE *savef;
 	fstat(fnum, &sbuf);
 	write(fnum, "RDK", 4);
 	lseek(fnum, 0L, 0);
-	
 	encwrite(version,strlen(version)+1,savef);
 	encwrite(&sbuf.st_ino,sizeof(sbuf.st_ino),savef);
 	encwrite(&sbuf.st_dev,sizeof(sbuf.st_dev),savef);
@@ -197,6 +200,9 @@ char *file, **envp;
 	int ret_status;
 #ifndef _AIX
 	extern char **environ;
+#endif
+#ifdef __DJGPP__                      /* st_ino w/ DJGPP under WinXP broken */
+        _djstat_flags |= _STAT_INODE; /* so turn off computing it for now   */
 #endif
 	char buf[LINLEN];
 	STAT sbuf2;
