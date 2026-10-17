@@ -421,7 +421,7 @@ md_getroguedir()
     {
         if (*home)
         {
-            strncpy(path, home, PATH_MAX - 20);
+            strncpy(path, home, sizeof(path) - 20);	/* Asciiverse: was PATH_MAX - 20 */
 
             end = &path[strlen(path)-1];
 

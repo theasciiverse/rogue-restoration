@@ -167,7 +167,8 @@ death(int monst)
     mvaddstr(15, 28 - ((int)(strlen(buf) + 1) / 2), buf);
     killer = killname(monst,buf);
     mvaddstr(17, 28 - ((int)(strlen(killer) + 1) / 2), killer);
-    mvaddstr(18, 28, (sprintf(prbuf, "%2d", lt->tm_year), prbuf));
+    /* Asciiverse: the whole year over the 1993 (it read 19126 in 2026) */
+    mvaddstr(18, 26, (sprintf(prbuf, "%4d", 1900 + lt->tm_year), prbuf));
     move(LINES - 1, 0);
 
     mvaddstr(LINES - 1, 0, retstr);
