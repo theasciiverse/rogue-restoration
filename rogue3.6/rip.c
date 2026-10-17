@@ -114,7 +114,8 @@ char monst;
      * Open file and read list
      */
 
-    if ((fd = open(SCOREFILE, 2)) < 0)
+    /* Asciiverse: the score file is in the player's data folder */
+    if ((fd = open(av_datafile("rogue36", SCOREFILE), O_RDWR | O_CREAT, 0644)) < 0)
 	return;
     outf = fdopen(fd, "w");
 

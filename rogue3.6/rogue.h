@@ -462,7 +462,7 @@ extern char *p_guess[MAXPOTIONS];		/* Players guess at what potion is */
 extern char *r_guess[MAXRINGS];		/* Players guess at what ring is */
 extern char *ws_guess[MAXSTICKS];		/* Players guess at what wand is */
 extern char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
-extern char file_name[80];			/* Save file name */
+extern char file_name[1024];		/* Save file name (Asciiverse: a full path) */
 extern char home[80];				/* User's home directory */
 
 extern WINDOW *cw;				/* Window that the player sees */

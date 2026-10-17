@@ -68,8 +68,8 @@ char **envp;
     home[79] = '\0';
 
 
-    strcpy(file_name, home);
-    strcat(file_name, "rogue.save");
+    /* Asciiverse: saved games go to the player's data folder */
+    strncpy(file_name, av_datafile("rogue36", "rogue.save"), sizeof(file_name) - 1);
 
     if ((env = getenv("ROGUEOPTS")) != NULL)
 	parse_opts(env);

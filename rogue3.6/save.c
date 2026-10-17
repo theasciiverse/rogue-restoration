@@ -139,7 +139,16 @@ char **envp;
 
     if (strcmp(file, "-r") == 0)
 	file = file_name;
-    if ((inf = open(file, 0)) < 0)
+    /* Asciiverse: a bare name not in the current folder, from the data folder */
+    if ((inf = open(file, 0)) < 0 && strchr(file, '/') == NULL)
+    {
+	static char path[1024];
+
+	strncpy(path, av_datafile("rogue36", file), sizeof(path) - 1);
+	if ((inf = open(path, 0)) >= 0)
+	    file = path;
+    }
+    if (inf < 0)
     {
 	perror(file);
 	return FALSE;
