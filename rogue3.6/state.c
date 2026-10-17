@@ -906,13 +906,14 @@ rs_read_daemons(FILE *savef, struct delayed_action *dlist, int cnt)
             default:dlist[i].d_func = NULL;
                     break;
 	}   
-    }
 
-    if (dlist[i].d_func == NULL)
-    {
-        dlist[i].d_type = 0;
-        dlist[i].d_arg = 0;
-        dlist[i].d_time = 0;
+	/* Asciiverse: for each slot, not for the one past the end */
+	if (dlist[i].d_func == NULL)
+	{
+	    dlist[i].d_type = 0;
+	    dlist[i].d_arg = 0;
+	    dlist[i].d_time = 0;
+	}
     }
 }       
 
@@ -990,8 +991,9 @@ rs_read_room_reference(FILE *savef, struct room **rp)
     
     rs_read_int(savef, &i);
 
+    /* Asciiverse: -1 was written for no room */
     if (!encerror())
-    *rp = &rooms[i];
+	*rp = (i >= 0 && i < MAXROOMS) ? &rooms[i] : NULL;
 }
 
 void

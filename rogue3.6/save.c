@@ -214,7 +214,12 @@ char **envp;
      * inode for as long as possible
      */
 
-    if (!wizard)
+    /*
+     * Asciiverse: sbuf, the saved file's stat when it was written, is not
+     * in the saved game (state.c never writes it), so these checks failed
+     * every restore; 3.6.4 did not make them.
+     */
+    if (0)
     {
 	if (sbuf2.st_ino != sbuf.st_ino || sbuf2.st_dev != sbuf.st_dev)
 	{
