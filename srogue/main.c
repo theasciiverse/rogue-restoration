@@ -450,7 +450,7 @@ roguehome()
     {
         if (*home)
         {
-            strncpy(path, home, PATH_MAX - 20);
+            strncpy(path, home, sizeof(path) - 20);	/* Asciiverse: was PATH_MAX - 20, past path[1024] */
 
             end = &path[strlen(path)-1];
 
