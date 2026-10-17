@@ -90,6 +90,7 @@ char home[LINELEN];			/* User's home directory */
 WINDOW *cw;				/* Window that the player sees */
 WINDOW *hw;				/* Used for the help command */
 WINDOW *mw;				/* Used to store mosnters */
+WINDOW *msgw;				/* Used to display messages */
 bool pool_teleport = FALSE;		/* just teleported from a pool */
 bool inwhgt = FALSE;			/* true if from wghtchk() */
 bool after;				/* True if we want after daemons */

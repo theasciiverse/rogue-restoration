@@ -1059,7 +1059,7 @@ extern char *ws_made[];			/* What sticks are made of */
 extern char *release;			/* Release number of rogue */
 extern char whoami[];			/* Name of player */
 extern char fruit[];			/* Favorite fruit */
-extern char huh[];			/* The last message printed */
+extern char huh[LINELEN];		/* The last message printed */
 extern char *s_guess[];			/* Players guess at what scroll is */
 extern char *p_guess[];			/* Players guess at what potion is */
 extern char *r_guess[];			/* Players guess at what ring is */
@@ -1072,6 +1072,7 @@ extern char home[];			/* User's home directory */
 extern WINDOW *cw;			/* Window that the player sees */
 extern WINDOW *hw;			/* Used for the help command */
 extern WINDOW *mw;			/* Used to store mosnters */
+extern WINDOW *msgw;			/* Used to display messages */
 extern bool pool_teleport;		/* just teleported from a pool */
 extern bool inwhgt;			/* true if from wghtchk() */
 extern bool running;			/* True if player is running */

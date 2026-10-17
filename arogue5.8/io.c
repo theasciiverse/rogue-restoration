@@ -34,8 +34,10 @@ msg(char *fmt, ...)
      */
     if (*fmt == '\0')
     {
-	wmove(cw, 0, 0);
-	wclrtoeol(cw);
+	overwrite(cw,msgw);
+	wmove(msgw, 0, 0);
+	clearok(msgw, FALSE);
+	draw(msgw);
 	mpos = 0;
 	return;
     }
@@ -65,20 +67,32 @@ addmsg(char *fmt, ...)
  */
 endmsg()
 {
-    strcpy(huh, msgbuf);
+    strncpy(huh, msgbuf, sizeof(huh));
+
+    huh[ sizeof(huh) - 1 ] = 0;
+
     if (mpos)
     {
-	wmove(cw, 0, mpos);
-	waddstr(cw, morestr);
+	wmove(msgw, 0, mpos);
+	waddstr(msgw, morestr);
 	draw(cw);
-	wait_for(cw,' ');
+	draw(msgw);
+	wait_for(msgw,' ');
+	overwrite(cw,msgw);
+	wmove(msgw,0,0);
+	touchwin(cw);
     }
-    mvwaddstr(cw, 0, 0, msgbuf);
-    wclrtoeol(cw);
+    else {
+	overwrite(cw,msgw);
+	wmove(msgw,0,0);
+    }
+    waddstr(msgw, msgbuf);
     mpos = newpos;
     newpos = 0;
     msgbuf[0] = '\0';
     draw(cw);
+    clearok(msgw, FALSE);
+    draw(msgw);
 }
 
 doadd(char *fmt, va_list ap)
@@ -86,7 +100,9 @@ doadd(char *fmt, va_list ap)
     /*
      * Do the sprintf into newmsg and append to msgbuf
      */
-    vsprintf(&msgbuf[newpos], fmt, ap);
+
+    vsnprintf(&msgbuf[newpos], sizeof(msgbuf)-newpos-1, fmt, ap);
+
     newpos = strlen(msgbuf);
 }
 

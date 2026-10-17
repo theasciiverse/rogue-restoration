@@ -34,9 +34,10 @@ do_rooms()
     /*
      * Clear things for a new level
      */
-    for (rp = rooms; rp < &rooms[MAXROOMS]; rp++)
+    for (rp = rooms; rp < &rooms[MAXROOMS]; rp++) {
 	rp->r_flags = 0;
 	rp->r_fires = NULL;
+    }
     /*
      * Put the gone rooms, if any, on the level
      */

@@ -47,7 +47,7 @@
 #include <stdlib.h>
 
 #if defined(_WIN32) && !defined(__MINGW32__)
-#define PATH_MAX _PATH_MAX
+#define PATH_MAX MAX_PATH
 #endif
 
 #include <curses.h>

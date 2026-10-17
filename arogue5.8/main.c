@@ -184,7 +184,9 @@ char **envp;
     cw = newwin(LINES, COLS, 0, 0);
     mw = newwin(LINES, COLS, 0, 0);
     hw = newwin(LINES, COLS, 0, 0);
+    msgw = newwin(4, COLS, 0, 0);
     keypad(cw,1);
+    keypad(msgw,1);
 
     init_player();			/* Roll up the rogue */
     waswizard = wizard;
