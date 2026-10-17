@@ -228,7 +228,14 @@ restore(register char *file, char **envp)
 #endif
 
     initscr();
-    lseek(inf, 0L, 0);
+    /*
+     * Asciiverse: no seek back to the start here. The original saved the
+     * program's whole data segment from the version string on and read
+     * it all back from there; save_file() writes the version and then
+     * these fields, so they follow the version just read, and reading
+     * them from the start took the version for them and put every later
+     * field out of place ("Cannot restart the game on a smaller screen").
+     */
     encread((char *)&sbuf.st_ino,sizeof(sbuf.st_ino), inf);
     encread((char *)&sbuf.st_dev,sizeof(sbuf.st_dev), inf);
     encread((char *)&sbuf.st_ctime,sizeof(sbuf.st_ctime), inf);
