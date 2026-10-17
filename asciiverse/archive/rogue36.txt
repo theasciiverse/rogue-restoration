@@ -1,0 +1,5 @@
+# rogue36: Rogue 3.6, its manual page and guide, and its BSD licence
+out/rogue36
+rogue3.6/rogue.6 -> rogue36.6
+rogue3.6/rogue.doc -> guide.txt
+rogue3.6/LICENSE -> LICENSE

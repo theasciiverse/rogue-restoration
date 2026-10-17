@@ -8,13 +8,14 @@
 #   LIBS=-lncurses asciiverse/build.sh                    # macOS
 #
 # The games are 1980s C: built as gnu89, with globals in common blocks as
-# their compilers had them. compat/centre.h, included before every source
-# file, plays each on a fixed 80x24 field centred in the terminal and
-# gives it its data folder (compat/centre.c).
+# their compilers had them, and with -fwrapv, since their random number
+# generators count on signed overflow wrapping. compat/centre.h, included
+# before every source file, plays each on a fixed 80x24 field centred in
+# the terminal and gives it its data folder (compat/centre.c).
 set -eu
 cd "$(dirname "$0")/.."
 export CC="${CC:-cc}"
-export CFLAGS="${CFLAGS:--O2} -std=gnu89 -fcommon -include $PWD/compat/centre.h -I$PWD/compat"
+export CFLAGS="${CFLAGS:--O2} -std=gnu89 -fcommon -fwrapv -include $PWD/compat/centre.h -I$PWD/compat"
 export LDFLAGS="${LDFLAGS:-}"
 export LIBS="${LIBS:--lncursesw}"
 export OUT="${OUT:-$PWD/out}"
