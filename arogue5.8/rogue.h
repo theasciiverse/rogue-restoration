@@ -725,6 +725,10 @@ struct delayed_action {
 	int d_time;
 };
 
+/* Asciiverse: it returns a pointer, which an int would cut in half */
+struct delayed_action *find_slot();
+
+
 /*
  * level types
  */

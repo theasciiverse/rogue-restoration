@@ -60,7 +60,18 @@ class Explorer:
                 return y, x
         return None
 
-    def path_to(self, g, start, goal):
+    def inside(self, g, y, x):
+        """A blank cell walled in on four sides: the floor of a room seen
+        before and no longer shown (Advanced Rogue forgets dark rooms)."""
+        def first(cells):
+            return next((c for c in cells if c != " "), None)
+        row = g[y]
+        col = [g[i][x] for i in range(len(g))]
+        return (first(reversed(row[:x])) in ("|", "+") and first(row[x + 1:]) in ("|", "+")
+                and first(reversed(col[self.top:y])) in ("-", "+")
+                and first(col[y + 1:self.bottom + 1]) in ("-", "+"))
+
+    def path_to(self, g, start, goal, through_rooms=False):
         """First step of a shortest orthogonal path to a cell where goal(y, x)."""
         seen = {start: None}
         q = collections.deque([start])
@@ -73,7 +84,9 @@ class Explorer:
             for dy, dx in STEPS:
                 ny, nx = y + dy, x + dx
                 if (self.top <= ny <= self.bottom and 0 <= nx < 80
-                        and (ny, nx) not in seen and g[ny][nx] in self.walk):
+                        and (ny, nx) not in seen
+                        and (g[ny][nx] in self.walk or (ny, nx) == self.stairs_at
+                             or (through_rooms and g[ny][nx] == " " and self.inside(g, ny, nx)))):
                     seen[(ny, nx)] = (y, x)
                     q.append((ny, nx))
         return None
@@ -84,7 +97,7 @@ class Explorer:
 
     def level(self, g):
         for row in g[self.status_row - 1:self.status_row + 1]:
-            m = re.search(r"Level: *(\d+)", row)
+            m = re.search(r"(?:Level|Lvl): *(\d+)", row)
             if m:
                 return int(m.group(1))
         return None
@@ -155,8 +168,8 @@ class Explorer:
         step = None
         if descend and me == self.stairs_at:
             return take_stairs()
-        if descend and seen:
-            step = self.path_to(g, me, lambda fy, fx: g[fy][fx] == self.stairs)
+        if descend and self.stairs_at:
+            step = self.path_to(g, me, lambda fy, fx: (fy, fx) == self.stairs_at, True)
         if step is None:
             step = self.path_to(g, me, lambda fy, fx: g[fy][fx] in self.items)
         if step is None:

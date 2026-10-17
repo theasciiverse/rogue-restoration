@@ -150,7 +150,16 @@ char **envp;
     if (strcmp(file, "-r") == 0)
 	file = file_name;
 
-    if ((inf = open(file, O_RDONLY)) < 0)
+    /* Asciiverse: a bare name not in the current folder, from the data folder */
+    if ((inf = open(file, O_RDONLY)) < 0 && strchr(file, '/') == NULL)
+    {
+	static char path[1024];
+
+	strncpy(path, av_datafile("arogue", file), sizeof(path) - 1);
+	if ((inf = open(path, O_RDONLY)) >= 0)
+	    file = path;
+    }
+    if (inf < 0)
     {
 	perror(file);
 	return FALSE;
@@ -228,7 +237,8 @@ char **envp;
     }
 
     environ = envp;
-    strcpy(file_name, file);
+    if (file != file_name)	/* Asciiverse: not onto itself (-r) */
+	strcpy(file_name, file);
     setup();
     clearok(curscr, TRUE);
     touchwin(cw);

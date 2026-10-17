@@ -57,17 +57,9 @@ char **envp;
 
     strncpy(home,md_gethomedir(),LINELEN);
 
-    /* Get default save file */
-    strcpy(file_name, home);
-    strcat(file_name, "arogue58.sav");
-
-    /* Get default score file */
-    strcpy(score_file, roguedir);
-
-    if (*score_file)
-        strcat(score_file,"/");
-
-    strcat(score_file, "arogue58.scr");
+    /* Asciiverse: the saved game and the score file in the data folder */
+    strncpy(file_name, av_datafile("arogue", "arogue58.sav"), 1023);
+    strncpy(score_file, av_datafile("arogue", "arogue58.scr"), 1023);
 
     if ((env = getenv("ROGUEOPTS")) != NULL)
 	parse_opts(env);
