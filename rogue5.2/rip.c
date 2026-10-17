@@ -150,6 +150,9 @@ char monst;
 		}
 	    else
 		sc2 = &top_ten[9];
+	    /* Asciiverse: no older score of hers, so the last one drops out */
+	    if (sc2 > &top_ten[9])
+		sc2 = &top_ten[9];
 	    while (sc2 > scp)
 	    {
 		*sc2 = sc2[-1];
