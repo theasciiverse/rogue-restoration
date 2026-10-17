@@ -158,8 +158,8 @@ int  firstmove   = FALSE;
 int  askme       = FALSE;
 char whoami[2 * LINELEN];           /* Name of player  */
 char fruit[2 * LINELEN];            /* Favorite fruit  */
-char file_name[2 * LINELEN];        /* Save file name  */
-char score_file[2 * LINELEN];       /* Score file name */
+char file_name[1024];               /* Save file name (Asciiverse: a full path) */
+char score_file[1024];              /* Score file name (Asciiverse: likewise) */
 
 /****************************************************************************/
 /* Portable Save State Code                                                 */
@@ -369,7 +369,7 @@ ur_read_room(FILE *savef)
 
     r->r_flags = ur_read_int(savef);
     r->r_nexits = ur_read_int(savef);
-    r->r_flags = ur_read_short(savef);
+    r->r_flags = ur_read_int(savef);    /* Asciiverse: written as an int */
 
     return(r);
 }
@@ -399,18 +399,24 @@ ur_write_object(FILE *savef, struct object *o)
     ur_write(savef,          &o->o_mark[0], MARKLEN);
     ur_write_long(savef,      o->o_worth);
 
+    /*
+     * Asciiverse: the flags say exactly what follows, as
+     * ur_read_object() reads it. They said a stack followed whenever
+     * next_obj was set, but one was written only when next_obj is the
+     * head of its list; and a bag hid a stack that was written.
+     */
     other = 0;
 
     if (o->o_bag)
-        other = 1;
-    else if (o->next_obj)
+        other |= 1;
+    if (o->next_obj && (o->next_obj->l_prev == NULL) )
         other |= 2;
 
     ur_write_int(savef,other);
 
-    if (o->o_bag)
+    if (other & 1)
         ur_write_bag(savef,o->o_bag);
-    if (o->next_obj && (o->next_obj->l_prev == NULL) )
+    if (other & 2)
         ur_write_object_stack(savef, o->next_obj);
 }
 
@@ -1018,11 +1024,16 @@ ur_write_window(FILE *savef, WINDOW *win)
 
     ur_write_long(savef, URS_WINDOW);
 
-    ur_write_int(savef, win->_maxy);
-    ur_write_int(savef, win->_maxx);
+    /*
+     * Asciiverse: WINDOW is opaque in ncurses, and its _maxy and _maxx
+     * are the last line and column, not their counts, so the last line
+     * and column were never saved
+     */
+    ur_write_int(savef, getmaxy(win));
+    ur_write_int(savef, getmaxx(win));
 
-    for(i=0; i < win->_maxy; i++)
-        for(j = 0; j < win->_maxx; j++)
+    for(i=0; i < getmaxy(win); i++)
+        for(j = 0; j < getmaxx(win); j++)
             ur_write_ulong(savef, mvwinch(win,i,j));
 }
 
