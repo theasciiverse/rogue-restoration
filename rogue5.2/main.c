@@ -78,16 +78,17 @@ char **envp;
     /*
      * get home and options from environment
      */
+    /* Asciiverse: home cut to fit; saved games in the data folder */
     if ((env = getenv("HOME")) != NULL)
-	strcpy(home, env);
+	strncpy(home, env, MAXSTR - 2);
     else if ((pw = md_gethomedir()) != NULL)
-	strcpy(home, pw);
+	strncpy(home, pw, MAXSTR - 2);
     else
 	home[0] = '\0';
+    home[MAXSTR - 2] = '\0';
     strcat(home, "/");
 
-    strcpy(file_name, home);
-    strcat(file_name, "rogue.save");
+    strncpy(file_name, av_datafile("rogue52", "rogue.save"), 1023);
 
     if ((env = getenv("ROGUEOPTS")) != NULL)
 	parse_opts(env);
@@ -265,8 +266,7 @@ int sig;
     getyx(curscr, y, x);
     mvcur(y, x, oy, ox);
     fflush(stdout);
-    curscr->_cury = oy;
-    curscr->_curx = ox;
+    wmove(curscr, oy, ox);	/* Asciiverse: WINDOW is opaque in ncurses */
 }
 #endif
 

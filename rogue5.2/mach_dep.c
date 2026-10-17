@@ -29,10 +29,12 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #include "rogue.h"
 
 #ifdef SCOREFILE
-static char *lockfile = "/tmp/.roguelock";
+/* Asciiverse: the lock file is in the player's data folder */
+static char lockfile[1024];
 #endif
 
 #ifdef CHECKTIME
@@ -69,7 +71,8 @@ void
 open_score()
 {
 #ifdef SCOREFILE
-    fd = open(SCOREFILE, 2);
+    /* Asciiverse: the score file is in the player's data folder */
+    fd = open(av_datafile("rogue52", SCOREFILE), O_RDWR | O_CREAT, 0644);
 #else
     fd = -1;
 #endif
@@ -375,6 +378,8 @@ lock_sc()
     static struct stat sbuf;
     time_t time();
 
+    if (lockfile[0] == '\0')
+	strncpy(lockfile, av_datafile("rogue52", "rogue52.lck"), sizeof(lockfile) - 1);
 over:
     if (creat(lockfile, 0000) > 0)
 	return TRUE;

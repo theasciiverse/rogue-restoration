@@ -34,7 +34,7 @@ save_game()
 {
     register FILE *savef;
     register int c;
-    char buf[MAXSTR];
+    char buf[1024];			/* Asciiverse: holds file_name */
 
     /*
      * get file name
@@ -202,7 +202,16 @@ char **envp;
 # endif
 #endif
 
-    if ((inf = open(file, 0)) < 0)
+    /* Asciiverse: a bare name not in the current folder, from the data folder */
+    if ((inf = open(file, 0)) < 0 && strchr(file, '/') == NULL)
+    {
+	static char path[1024];
+
+	strncpy(path, av_datafile("rogue52", file), sizeof(path) - 1);
+	if ((inf = open(path, 0)) >= 0)
+	    file = path;
+    }
+    if (inf < 0)
     {
 	perror(file);
 	return FALSE;
@@ -315,7 +324,8 @@ char **envp;
     else
 	setterm(Def_term);
 #endif
-    strcpy(file_name, file);
+    if (file != file_name)	/* Asciiverse: not onto itself (-r) */
+	strcpy(file_name, file);
     setup();
     clearok(curscr, TRUE);
     srand(md_getpid());

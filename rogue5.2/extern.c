@@ -70,7 +70,7 @@ char *p_guess[MAXPOTIONS];		/* Players guess at what potion is */
 char *r_guess[MAXRINGS];		/* Players guess at what ring is */
 char *ws_guess[MAXSTICKS];		/* Players guess at what wand is */
 char *ws_type[MAXSTICKS];		/* Is it a wand or a staff */
-char file_name[MAXSTR];			/* Save file name */
+char file_name[1024];			/* Save file name (Asciiverse: a full path) */
 char home[MAXSTR];			/* User's home directory */
 char _level[MAXLINES*MAXCOLS];		/* Level map */
 char _flags[MAXLINES*MAXCOLS];		/* Flags for each space on the map */
