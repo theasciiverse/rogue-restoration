@@ -6,6 +6,9 @@
 #   asciiverse/build.sh                                   # Debian, Ubuntu
 #   LIBS=-lncursesw LDFLAGS=-static asciiverse/build.sh   # Alpine, static
 #   LIBS=-lncurses asciiverse/build.sh                    # macOS
+#   asciiverse/build.sh rogue52 xrogue                    # only these
+#
+# Each game is one compiler run, one game after another.
 #
 # The games are 1980s C: built as gnu89, with globals in common blocks as
 # their compilers had them, and with -fwrapv, since their random number
@@ -21,6 +24,8 @@ export LIBS="${LIBS:--lncursesw}"
 export OUT="${OUT:-$PWD/out}"
 export COMPAT="$PWD/compat/centre.c"
 mkdir -p "$OUT"
-for s in asciiverse/build/*.sh; do
-  sh -eu "$s"
-done
+if [ $# -gt 0 ]; then
+  for id in "$@"; do sh -eu "asciiverse/build/$id.sh"; done
+else
+  for s in asciiverse/build/*.sh; do sh -eu "$s"; done
+fi
