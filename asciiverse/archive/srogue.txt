@@ -1,0 +1,3 @@
+# srogue: Super-Rogue 9.0 and its licence
+out/srogue
+srogue/LICENSE.TXT -> LICENSE

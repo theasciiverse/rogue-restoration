@@ -42,11 +42,12 @@ class Explorer:
         self.oy, self.ox = oy, ox
         self.visited = collections.Counter()
         self.searches = 0
-        self.levels = 0
+        self.levels = 0         # how many levels down from the first
         self.last = None
         self.stairs_at = None   # the hero hides the stairs when on them
         self.stuck_diag = None  # a diagonal blow that did nothing
         self.blows = 0          # fights that showed a hit or a miss
+        self.first_level = None
 
     def grid(self):
         rows = self.r.rows()
@@ -81,6 +82,13 @@ class Explorer:
         m = self.hp.search(g[self.status_row])
         return (int(m.group(1)), int(m.group(2))) if m else (1, 1)
 
+    def level(self, g):
+        for row in g[self.status_row - 1:self.status_row + 1]:
+            m = re.search(r"Level: *(\d+)", row)
+            if m:
+                return int(m.group(1))
+        return None
+
     def has_more(self, g):
         return any(m in line for line in g[:3] for m in self.more)
 
@@ -90,6 +98,14 @@ class Explorer:
         if self.has_more(g):
             r.key(" ", 0.15)
             return "more"
+        lv = self.level(g)
+        if lv is not None:
+            if self.first_level is None:
+                self.first_level = lv
+            if lv - self.first_level > self.levels:
+                self.levels = lv - self.first_level
+                self.visited.clear()
+                self.stairs_at = None
         me = self.find(g, "@")
         if me is None:
             r.key(" ", 0.2)
@@ -123,13 +139,14 @@ class Explorer:
         def frontier(fy, fx):
             near_dark = any(0 <= fx + dx < 80 and g[fy + dy][fx + dx] == " "
                             for dy, dx in STEPS if self.top <= fy + dy <= self.bottom)
-            return near_dark and g[fy][fx] in "#+" and self.visited[(fy, fx)] < 2
+            # corridors and doors with darkness beside them, and the
+            # floor of a dark room where it is not yet seen
+            return near_dark and g[fy][fx] in "#+." and self.visited[(fy, fx)] < 2
 
         def take_stairs():
             r.key(self.down, 0.5)
             self.visited.clear()
             self.stairs_at = None
-            self.levels += 1
             return "stairs"
 
         seen = self.find(g, self.stairs)
@@ -155,6 +172,10 @@ class Explorer:
         if step is None or self.visited[me] > 12:
             # nothing left to walk to: search for hidden doors, then wander
             self.searches += 1
+            if descend and self.searches == 1:
+                # the stairs may be under the hero since it arrived
+                r.key(self.down, 0.5)
+                return "stairs?"
             if self.searches < 8:
                 r.key(self.rest, 0.12)
                 return "search"
