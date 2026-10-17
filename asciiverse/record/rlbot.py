@@ -24,14 +24,15 @@ DIAG = {(-1, -1): "y", (-1, 1): "u", (1, -1): "b", (1, 1): "n"}
 
 class Explorer:
     def __init__(self, r, items="*!?:)]/=,", walk=".#+%", stairs="%",
-                 monster=str.isupper, more=("--More--", "-more-", "--more--"),
+                 monster=str.isupper, more=("--More--", "-more-", "--more--", "-- More --"),
                  status_row=23, hp=r"Hp: *(\d+)\((\d+)\)", rest="s",
                  down=">", top=1, bottom=22, oy=OY, ox=OX):
         self.r = r
         self.items = set(items)
         self.walk = set(walk) | self.items
         self.stairs = stairs
-        self.monster = monster
+        # "alpha": monsters are upper and lower case letters
+        self.monster = (lambda c: c.isalpha() and c != "@") if monster == "alpha" else monster
         self.more = more
         self.status_row = status_row
         self.hp = re.compile(hp)

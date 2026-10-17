@@ -19,6 +19,7 @@
 #include <termios.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <string.h>
 #include <signal.h>
 #include <pwd.h>
 #include <limits.h>
@@ -72,11 +73,8 @@ char **envp;
 
 	/* check for print-score option */
 
-	strcpy(scorefile, homedir);
-
-	if (*scorefile)
-		strcat(scorefile,"/");
-	strcat(scorefile, "srogue.scr");
+	/* Asciiverse: the score file is in the player's data folder */
+	strncpy(scorefile, av_datafile("srogue", "srogue.scr"), 1023);
 
 	if(argc >= 2 && strcmp(argv[1], "-s") == 0)
 	{
@@ -107,12 +105,14 @@ char **envp;
 
 	/* get home and options from environment */
 
+	/* Asciiverse: cut to fit home[] */
 	if ((env = getenv("HOME")) != NULL)
-		strcpy(home, env);
+		strncpy(home, env, LINLEN - 2);
 	else if ((pw = getpwuid(playuid)) != NULL)
-		strcpy(home, pw->pw_dir);
+		strncpy(home, pw->pw_dir, LINLEN - 2);
 	else
 		home[0] = '\0';
+	home[LINLEN - 2] = '\0';
 
         if (strcmp(home,"/") == 0)
 		home[0] = '\0';
@@ -120,15 +120,22 @@ char **envp;
         if ((strlen(home) > 0) && (home[strlen(home)-1] != '/'))
 		strcat(home, "/");
 
-	strcpy(file_name, home);
-	strcat(file_name, "srogue.sav");
+	/* Asciiverse: saved games go to the player's data folder */
+	strncpy(file_name, av_datafile("srogue", "srogue.sav"), 1023);
 
 	if ((env = getenv("ROGUEOPTS")) != NULL)
 		parse_opts(env);
 
 	if (env == NULL || whoami[0] == '\0')
 	{
-		if((pw = getpwuid(playuid)) == NULL)
+		/* Asciiverse: the name from $LOGNAME or $USER first */
+		char *login = getenv("LOGNAME");
+
+		if (login == NULL || *login == '\0')
+			login = getenv("USER");
+		if (login != NULL && *login != '\0')
+			strucpy(whoami, login, strlen(login) < LINLEN ? strlen(login) : LINLEN - 1);
+		else if((pw = getpwuid(playuid)) == NULL)
 		{
 			printf("Say, who are you?\n");
 			exit(1);

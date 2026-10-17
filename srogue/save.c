@@ -15,6 +15,7 @@
  */
 
 #include <unistd.h>
+#include <string.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <sys/types.h>
@@ -208,7 +209,21 @@ char *file, **envp;
 	STAT sbuf2;
 	int slines, scols;
 
-	if ((inf = open(file, O_RDONLY)) < 0) {
+	/*
+	 * Asciiverse: -r is the saved game in the data folder, as in Rogue
+	 * 3.6 and 5.2; a bare name not in the current folder is looked for
+	 * there too
+	 */
+	if (strcmp(file, "-r") == 0)
+		file = file_name;
+	if ((inf = open(file, O_RDONLY)) < 0 && strchr(file, '/') == NULL) {
+		static char path[1024];
+
+		strncpy(path, av_datafile("srogue", file), sizeof(path) - 1);
+		if ((inf = open(path, O_RDONLY)) >= 0)
+			file = path;
+	}
+	if (inf < 0) {
 		printf("Cannot read save game %s\n",file);
 		return FALSE;
 	}
@@ -331,7 +346,8 @@ char *file, **envp;
 
 	environ = envp;
 
-	strcpy(file_name, file);
+	if (file != file_name)	/* Asciiverse: not onto itself (-r) */
+		strcpy(file_name, file);
 	setup();
 	restscr(cw);
 	srand48(getpid());

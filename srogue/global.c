@@ -62,8 +62,8 @@ char prbuf[LINLEN];			/* Buffer for sprintfs */
 char whoami[LINLEN];		/* Name of player */
 char fruit[LINLEN];			/* Favorite fruit */
 char huh[LINLEN];			/* The last message printed */
-char file_name[LINLEN];		/* Save file name */
-char scorefile[LINLEN];		/* place for scorefile */
+char file_name[1024];		/* Save file name (Asciiverse: a full path) */
+char scorefile[1024];		/* place for scorefile (Asciiverse: likewise) */
 char home[LINLEN];			/* User's home directory */
 char outbuf[BUFSIZ];		/* Output buffer for stdout */
 
