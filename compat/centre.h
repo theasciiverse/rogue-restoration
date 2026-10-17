@@ -56,6 +56,15 @@ void av_follow_resize(void);
 #define wgetch(w) av_wgetch(w)
 #undef getch
 #define getch() av_wgetch(av_stdscr)
+/* curses' printw() and scanw() are functions that use its own stdscr */
+#undef printw
+#define printw(...) wprintw(av_stdscr, __VA_ARGS__)
+#undef mvprintw
+#define mvprintw(y, x, ...) mvwprintw(av_stdscr, y, x, __VA_ARGS__)
+#undef scanw
+#define scanw(...) wscanw(av_stdscr, __VA_ARGS__)
+#undef mvscanw
+#define mvscanw(y, x, ...) mvwscanw(av_stdscr, y, x, __VA_ARGS__)
 
 /*
  * The folder for the game's files (scores, saved games), made on first
