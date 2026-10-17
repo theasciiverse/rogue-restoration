@@ -157,7 +157,7 @@ char rainbow[][15] = {
     "Tangerine"
 };
 
-#define NCOLORS (sizeof rainbow / sizeof (char *))
+#define NCOLORS (sizeof rainbow / sizeof rainbow[0])
 const int cNCOLORS = NCOLORS;
 
 char *sylls[] = {
@@ -203,7 +203,7 @@ char stones[][15] = {
     "Turquoise",
 };
 
-#define NSTONES (sizeof stones / sizeof (char *))
+#define NSTONES (sizeof stones / sizeof stones[0])
 const int cNSTONES = NSTONES;
 
 char wood[][15] = {
@@ -231,7 +231,7 @@ char wood[][15] = {
     "Zebra wood",
 };
 
-#define NWOOD (sizeof wood / sizeof (char *))
+#define NWOOD (sizeof wood / sizeof wood[0])
 const int cNWOOD = NWOOD;
 
 char metal[][15] = {
@@ -248,7 +248,7 @@ char metal[][15] = {
     "Zinc",
 };
 
-#define NMETAL (sizeof metal / sizeof (char *))
+#define NMETAL (sizeof metal / sizeof metal[0])
 const int cNMETAL = NMETAL;
 
 struct magic_item things[NUMTHINGS] = {
