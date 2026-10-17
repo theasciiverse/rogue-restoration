@@ -19,6 +19,12 @@
 #include <signal.h>
 #include <stdio.h>
 #include <stdarg.h>
+/*
+ * Asciiverse: the C library's daemon() and the game's daemon type share
+ * a name; the library's header first, then the game's daemon renamed
+ */
+#include <unistd.h>
+#define daemon ur_daemon
 
 #ifndef LINT
 #include <curses.h>

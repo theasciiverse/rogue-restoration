@@ -25,8 +25,8 @@ DIAG = {(-1, -1): "y", (-1, 1): "u", (1, -1): "b", (1, 1): "n"}
 class Explorer:
     def __init__(self, r, items="*!?:)]/=,", walk=".#+%", stairs="%",
                  monster=str.isupper, more=("--More--", "-more-", "--more--", "-- More --"),
-                 status_row=23, hp=r"Hp: *(\d+)\((\d+)\)", rest="s",
-                 down=">", top=1, bottom=22, oy=OY, ox=OX):
+                 status_row=23, hp=r"Hpt?: *(\d+)\( *(\d+)\)", rest="s",
+                 down=">", top=1, bottom=22, oy=OY, ox=OX, cancel="\x1b"):
         self.r = r
         self.items = set(items)
         self.walk = set(walk) | self.items
@@ -46,6 +46,12 @@ class Explorer:
         self.last = None
         self.stairs_at = None   # the hero hides the stairs when on them
         self.stuck_diag = None  # a diagonal blow that did nothing
+        self.waits = 0          # turns waited for it
+        self.escaped = None     # the last question answered with cancel
+        # the answer to a question: Escape, or for UltraRogue, which takes
+        # Escape and a key soon after as Alt and the key, "*" and Return
+        # to "Which one do you want to pick up? [* for all]"
+        self.cancel = cancel
         self.blows = 0          # fights that showed a hit or a miss
         self.first_level = None
 
@@ -111,6 +117,11 @@ class Explorer:
         if self.has_more(g):
             r.key(" ", 0.15)
             return "more"
+        top = " ".join(g[:2])
+        if (g[0].rstrip().endswith("?") or "[* for all]" in top) and top != self.escaped:
+            r.key(self.cancel, 0.2)  # a question (which item to pick up)
+            self.escaped = top      # once: the game may leave it on screen
+            return "escape"
         lv = self.level(g)
         if lv is not None:
             if self.first_level is None:
@@ -133,10 +144,21 @@ class Explorer:
                     and 0 <= x + dx < 80 and self.monster(g[y + dy][x + dx])), None)
         if foe:
             before = r.text()
-            if foe in DIAG and self.stuck_diag == (me, foe):
+            if foe in DIAG and self.stuck_diag == (me, foe) and self.waits < 3:
                 # no diagonal step out of a doorway: let it come round
+                self.waits += 1
                 r.key(self.rest, 0.15)
                 return "wait"
+            if self.waits >= 3:
+                # it does not come round: step back along the way in
+                self.waits = 0
+                self.stuck_diag = None
+                back = next((d for d in STEPS if (y + d[0], x + d[1]) != (y + foe[0], x + foe[1])
+                             and self.top <= y + d[0] <= self.bottom and 0 <= x + d[1] < 80
+                             and g[y + d[0]][x + d[1]] in "#+."), None)
+                if back:
+                    r.key(STEPS[back], 0.15)
+                    return "retreat"
             r.key(STEPS.get(foe) or DIAG[foe], 0.18)
             if foe in DIAG and r.text() == before:
                 self.stuck_diag = (me, foe)

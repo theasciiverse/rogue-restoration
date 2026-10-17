@@ -62,7 +62,7 @@
 #include <term.h>
 #else
 #ifdef NCURSES_VERSION
-#include <ncurses/term.h>
+#include <term.h>	/* Asciiverse: not every system has ncurses/term.h */
 #endif
 #endif
 

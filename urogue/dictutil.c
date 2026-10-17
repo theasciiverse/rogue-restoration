@@ -28,7 +28,7 @@ static char sccsid[] = "%W% %G%";
 #include "dictutil.h"
 #include "rogue.h"
 
-int   trace;
+int   dict_trace;	/* Asciiverse: was trace, which curses has as a function */
 FILE  *ft;
 
 
@@ -83,13 +83,13 @@ void *dict_load_block( DICTIONARY *dict , char *toc_id ,
 
    if ( block == NULL ) {
       ptr = malloc( dt_entry->size );
-      if ( trace > 3 ) {
+      if ( dict_trace > 3 ) {
          fprintf( ft , "\ndict_load_block allocates %lx bytes at location %p\n" ,
                    dt_entry->size , ptr );
       } /* endif */
    } else {
       ptr = block;
-      if ( trace > 3 ) {
+      if ( dict_trace > 3 ) {
          fprintf( ft , "\ndict_load_block uses memory at location %p\n" , ptr );
       } /* endif */
    } /* endif */
@@ -113,7 +113,7 @@ void *dict_load_block( DICTIONARY *dict , char *toc_id ,
 
    dt_entry->ptr = ptr;
 
-   if ( trace > 3 ) {
+   if ( dict_trace > 3 ) {
       fprintf( ft , "\nLoaded block\nTOC entry:    id:%s  offset:%lx  size:%lx  ptr:%p  checksum:%lx  type:%d\n" ,
                dict->toc[index].id , dict->toc[index].offset ,
                dict->toc[index].size , dict->toc[index].ptr ,
@@ -160,7 +160,7 @@ BOOLEANC dict_save_block( DICTIONARY *dict , char *toc_id , FILE *fo )
       return( FALSE );
    } /* endif */
 
-   if ( trace > 3 ) {
+   if ( dict_trace > 3 ) {
       fprintf( ft , "\nStored block\nTOC entry:           id:%s  offset:%lx  size:%lx  ptr:%p  checksum:%lx  type:%d\n" ,
                dict->toc[index].id , dict->toc[index].offset ,
                dict->toc[index].size , dict->toc[index].ptr ,
@@ -418,7 +418,7 @@ BOOLEANC dict_set_parm_variables( DICTIONARY *dict )
 }
 
 /***********
-**  If trace (global) > 0 , signal an error
+**  If dict_trace (global) > 0 , signal an error
 **  If severity > 0 , abort
 ***********/
 
@@ -426,7 +426,7 @@ void signal_error( char *header , char *message , int severity )
 {
   FILE *fpe;
 
-  if ( trace > 0 ) {
+  if ( dict_trace > 0 ) {
      printf( "%s: %s\n" , header , message );
      fpe = fopen( "ERROR.FIL" , "a" );
      fprintf( fpe , "\n%s: %s\n" , header , message );

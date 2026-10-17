@@ -33,6 +33,12 @@ static int def_array[MAXPDEF][MAXPATT];    /* Pre-def'd chars */
 static void get_chr_filename(char *filename, int size)
 {
     const char *home;
+
+    /* Asciiverse: the character file is in the player's data folder */
+    strncpy(filename, av_datafile("urogue", "urogue.chr"), size - 1);
+    filename[size - 1] = '\0';
+    if (filename[0] != '\0')
+        return;
  
     home = getenv("HOME");
 

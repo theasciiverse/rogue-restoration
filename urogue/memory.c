@@ -339,7 +339,7 @@ void *mem_realloc(const void *ptr, const size_t new_size)
 /* check a pointer to be sure all check bytes are OK. abort if not */
 /* always returns 1 if not aborting so that it can be included in  */
 /* if statement boolean expressions */
-int mem_validate(void *ptr)
+int mem_validate(const void *ptr)	/* Asciiverse: as rogue.h declares it */
 {
 	unsigned char *mem_temp = (unsigned char *)ptr;
 	size_t mem_size;

@@ -76,7 +76,13 @@ main(int argc, char *argv[])
 
     /* Get default score file */
 
-    strcpy(score_file, "urogue.scr");
+    /*
+     * Asciiverse: the score file and the saved game are in the player's
+     * data folder (the score file was in the current folder, and there
+     * was no default saved game, so -r restored nothing)
+     */
+    strncpy(score_file, av_datafile("urogue", "urogue.scr"), 1023);
+    strncpy(file_name, av_datafile("urogue", "urogue.sav"), 1023);
 
     fd_score = fopen(score_file, "r+");
 
@@ -86,10 +92,12 @@ main(int argc, char *argv[])
     if ((env = getenv("OPTIONS")) != NULL)
         parse_opts(env);
 
-    nm = getenv("USER");
+    /* Asciiverse: $LOGNAME first, then $USER, cut to fit */
+    if ((nm = getenv("LOGNAME")) == NULL || *nm == '\0')
+        nm = getenv("USER");
 
-    if (nm != NULL)
-        strcpy(whoami,nm);
+    if (nm != NULL && *nm != '\0')
+        strncpy(whoami, nm, 2 * LINELEN - 1);
     else
         strcpy(whoami,"anonymous");
 		

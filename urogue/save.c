@@ -30,7 +30,7 @@ save_game(void)
 {
     FILE *savefd;
     char    buf[2 * LINELEN];
-    char    oldfile[2*LINELEN];
+    char    oldfile[1024];      /* Asciiverse: holds file_name */
 
     /* get file name */
 
@@ -56,6 +56,9 @@ save_game(void)
 
         if ( (buf[0] == 0) && (oldfile[0] != 0) )
             strcpy(file_name, oldfile);
+        else if (buf[0] != 0 && strchr(buf, '/') == NULL)
+            /* Asciiverse: a bare name is a file in the data folder */
+            strncpy(file_name, av_datafile("urogue", buf), 1023);
         else if (buf[0] != 0)
             strcpy(file_name, buf);
         else
@@ -88,7 +91,16 @@ restore(char *file)
     if (strcmp(file, "-r") == 0)
         file = file_name;
 
-    if ((infd = fopen(file, "r")) == NULL)
+    /* Asciiverse: a bare name not in the current folder, from the data folder */
+    if ((infd = fopen(file, "r")) == NULL && strchr(file, '/') == NULL)
+    {
+        static char path[1024];
+
+        strncpy(path, av_datafile("urogue", file), sizeof(path) - 1);
+        if ((infd = fopen(path, "r")) != NULL)
+            file = path;
+    }
+    if (infd == NULL)
     {
         perror(file);
         return(FALSE);
@@ -111,7 +123,8 @@ restore(char *file)
     if ((sp = getenv("OPTIONS")) != NULL)
         parse_opts(sp);
 
-    strcpy(file_name, file);
+    if (file != file_name)  /* Asciiverse: not onto itself (-r) */
+        strcpy(file_name, file);
 
     clearok(cw, TRUE);
     touchwin(cw);
