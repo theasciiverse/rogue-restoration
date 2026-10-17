@@ -18,7 +18,12 @@
 set -eu
 cd "$(dirname "$0")/.."
 export CC="${CC:-cc}"
-export CFLAGS="${CFLAGS:--O2} -std=gnu89 -fcommon -fwrapv -include $PWD/compat/centre.h -I$PWD/compat"
+# Newer clang makes some of what 1980s C does errors even in gnu89 mode
+# (a bare return in an int function, mismatched function pointers);
+# they stay warnings, as they were.
+LENIENT="-Wno-error=return-mismatch -Wno-error=incompatible-function-pointer-types -Wno-error=int-conversion -Wno-error=implicit-function-declaration -Wno-error=implicit-int -Wno-unknown-warning-option"
+case "$($CC --version 2>/dev/null)" in *clang*) ;; *) LENIENT= ;; esac
+export CFLAGS="${CFLAGS:--O2} -std=gnu89 -fcommon -fwrapv $LENIENT -include $PWD/compat/centre.h -I$PWD/compat"
 export LDFLAGS="${LDFLAGS:-}"
 export LIBS="${LIBS:--lncursesw}"
 export OUT="${OUT:-$PWD/out}"
