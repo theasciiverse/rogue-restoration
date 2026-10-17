@@ -1,0 +1,160 @@
+Newsgroups: rec.games.rogue
+Subject: Re: Rogue versions.
+Expires: Wed, 16 Jun 1993 01:00:00 GMT
+Distribution: usa
+Organization:
+
+)There are two-and-a-half versions of "standard" rogue.
+)
+)Rogue 5.2 (the first widely available version) had Rust monsters, Giant
+)Ants, etc.
+)
+)Rogue 5.3 (a later version by the same authors) changed several of the
+)monsters, thus it had Rattlesnakes, Aquators, etc.  It also had some new
+)items, like the scroll of protect armor that you mentioned in your
+)posting.  I believe that this version also added death by hypothermia.
+) 
+)Rogue "clone" should really be called "rogue imposter."  This is
+)currently the only widely available version of the game, because the
+)original sources were never made available.  It is supposed to be a copy
+)of rogue 5.3.  Unfortunately it fails to accurately reproduce many
+)aspects of the game that some of us remember very fondly.  One of the
+)most obvious omissions is indeed the dark rooms.  Another omission, I
+)believe, is confusion after teleportation.  Finally, I believe it has
+)rather different probabilities for several key items than the original.
+)(However I can't prove this without the original sources.)
+)
+
+
+Rogue 8.0 runs very well on mainframes running UTS UNIX and on the 386/486
+systems.  However, it has problems with playing saved games on both Vax
+systems and Sun workstations. 
+
+Here are some of the features of Rogue 8.0
+
+1)  New option called "default" was added.  When you put the word default
+    into your environment variable ROGUEOPTS your character will be rolled
+    with "default" attribute settings, armor, weapon, quest item, and food.
+
+    This then, skips the beginning screen where you choose/distribute the
+    attribute points and also skips the beginning "equippage screen" where
+    you are able to choose your own armor, weapon, quest item, and etc.
+
+    If you also use the "class" option in your ROGUEOPTS variable, you
+    will start the game immediately at level 1 with default selections.
+    Example:
+
+    ROGUEOPTS="class=magician, default, name=Joe, nopickup, overlay"
+    export ROGUEOPTS
+
+    The other options tell the game that you don't want to automatically
+    want to pick up items as you step over them and overlay the screen
+    with menus (ie, don't blank and pause the screens).  If you don't set
+    "class" you will be able to choose your character type before you
+    are placed on level 1.
+
+2)  The nine character types have been modified to the point where you 
+    really have to take advantage of their various attributes during play.
+
+    Here's a list of their main and secondary attributes, special ability,
+    and each character's "default" quest item:
+
+    Character Main Attr.    Secondary     Specialties       Quest Item
+    -------------------------------------------------------------------------
+    Fighter   strength      constitution  sense gold        Axe of Aklad
+    Ranger    charisma      intelligence  cast spells       Mandolin of Brian
+    Paladin   charisma      wisdom        affect undead     Ankh of Heil
+    Cleric    wisdom        dexterity     prayer spells     Horn of Geryon
+    Magician  intelligence  dexterity     cast spells       Stonebones Amulet
+    Thief     dexterity     strength      sense traps       Musty Daggers
+    Assassin  dexterity     strength      steal/use poison  Eye of Vecna
+    Druid     wisdom        dexterity     chant spells      Quill of Nagrom
+    Monk      constitution  dexterity     chant spells      Emori Cloak
+
+    A different quest item may be chosen while you are in the beginning
+    equippage room (if you've not set the "default" option via ROGUEOPTS).
+
+    Also, the Ranger, Paladin, and Monk characters do not receive their
+    "special" abilities until they've gained some experience levels.
+    These three characters are derivative of the Magician, Cleric, and
+    Druid characters, with some of the Fighter's abilities as well.
+
+3)  The outer region has been enhanced.  This is the area you find yourself
+    in if you go up the stairs from level 1 _before_ you obtain your quest
+    item.  Dinosaurs inhabit this area and you will also find magic items
+    here as well.
+
+4)  A new trap was added called wormhole.  It sends you to the outer region
+    if you happen to fall into it.  You will remain at the same dungeon
+    level, until you find a staircase back out.  Dinosaurs get tougher at
+    the deeper levels.
+
+5)  New commands and/or changes made to current commands:
+
+    '?' gives help as before but you can now type '?@' which will display
+	the things that you may encounter (solid rock, potion, forest, etc).
+
+    '>' go down the stairs, dive into a magic pool, or enter a trap (you
+	have to be flying and/or wearing Elven boots to stand on traps).
+
+    '<" go up the stairs or enter the outer region if your standing
+        upon the wormhole trap.
+
+    'A' choose your quest item (must be done in beginning equippage room.
+
+    'F' Frighten a monster (the "good" characters can use this command
+	to scare away monsters that they don't want to kill but are in
+	their way.  The command will lose power at around level 10.
+
+    'g' give food to monsters (slime-molds) also important when trying
+	to obtain a certain quest item.
+
+    'G' sense for gold (if your character has this ability).
+
+    'O' display your character type and quest item.
+
+    'X' sense for traps (if your character has this ability).
+
+    '^' set a trap (if your character has this ability).
+
+    '+' get your fortune (warning: if you play over a modem typing three
+	consecutive '+' will tell your modem to enter command mode.  See
+	your modem manual on how to get back out.
+
+    'ctrl-b' tally up your current score (if you were to win).
+
+    'ctrl-e' check your current food level (satiated, weak, or fainting).
+
+    'ctrl-o' your character's status (fast, blind, protected, dancing, etc).
+
+6)  Changes to scrolls and potions, rings, misc magic, and quest items:
+
+    You can now wear up to 8 rings, four per hand.
+
+    Scrolls: 
+    - Monster confusion turns your hands a variety of colors (no biggie).
+    - Fixed magic mapping for very detailed maps
+    - Genocide works on monsters in the dungeon; dinosaurs in the outer region.
+    - Blessed teleportation teleports you up a few levels.
+    - Blessed remove curse will cause some monsters to panic.
+    - Charm monster lets you charm a few monsters which will then follow you
+      down the dungeon levels (if they are in room when you go downstairs).
+
+    Potions:
+    - Clear thought, extra sight, phasing, flying, and cold/fire/lightning
+      protection potions last a bit longer if they are blessed when quaffed.
+
+    Misc magic items:
+    - You can use Keoghtoms ointment a few more times before it will empty.
+    - The Beaker of Potions and Book of Spells hold a few more items.
+    - The Book of Skills can change you into a different character (it used
+      to just do an increase level).
+    - The Medicine Crystal is a new misc magic item that cures you. 
+
+    Quest items (relics):
+    - These items used to appear at level 40.  They now will appear between
+      levels 40-50, the less traumatic ones earlier.
+    - The Card of Alteran is a new quest item and requires some strategy
+      to obtain it from it's carrier.
+
+

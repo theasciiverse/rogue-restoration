@@ -1,0 +1,59 @@
+Some important file locations:
+
+1) rogue.c
+
+	To force everyone to play the game using the "default" character
+	attributes, set "def_attr=TRUE" here (line 117).  It is currently
+	set to FALSE.
+
+	Otherwise, if people want to play a character with its default
+	attributes, they have to set the ROGUEOPTS environment variable
+	to default before starting the game.  Example ROGUEOPT variables:
+
+	setenv ROGUEOPTS="default"
+	setenv ROGUEOPTS="default, nopickup name=Corwin, class=fighter"
+	setenv ROGUEOPTS="nopickup, name=Merlin, class=magician"
+
+2) save.c 
+
+        Code is set to allow multiple saved game restarts. (lines 253 & 274).
+	Code is currently set to allow this.
+
+3) init.c
+
+        Beginning game "help" message is defined here (line 16).
+
+4) mach_dep.h
+
+	The default location of the scorefile is set here (line 14).
+        Re-define (#define PLAYTIME 1) to allow only prime-shift playing
+        times (line 105).  Currently turned off, you can play anytime.
+
+5) command.c
+
+        When the character and game descriptions are finished (see help.c)
+        give access to them via the '\' command in command.c (line 337).
+	Until then, the '\' command does nothing.
+
+6) rogue.h
+
+        Line 58 determines how many players can be listed in the scorefile.
+        Currently set to 20.
+
+7) wizard.c
+
+        The wizard password ought not be messed with.  (see line 558).
+
+--
+
+The file clrln.c and clrln.h were an attempt to kludge "curses" and
+are expendable (if possible).
+
+--
+
+Additionally, the scorefile needs to be created with the proper file
+permissions if multiple players are to use the scorefile.  The game
+itself should have file permissions of 2555 (set-GID) and the scorefile
+permissions should be 660.  Scorefile name: /usr/games/lib/xrogue_roll.
+Game is set-GID, so the scorefile needs to be grouped to the same id.
+
