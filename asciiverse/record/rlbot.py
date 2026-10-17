@@ -116,7 +116,7 @@ class Explorer:
             return "fight"
         hp, hp_max = self.hit_points(g)
         if hp * 3 <= hp_max:
-            r.key(self.rest, 0.12)
+            r.key(self.rest, 0.03)     # quickly: nothing to watch
             return "rest"
 
         def frontier(fy, fx):

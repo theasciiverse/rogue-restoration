@@ -1,0 +1,4 @@
+# rogue52: Rogue 5.2, its manual page and its BSD licence
+out/rogue52
+rogue5.2/rogue.6 -> rogue52.6
+rogue5.2/LICENSE -> LICENSE
