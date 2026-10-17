@@ -17,7 +17,7 @@ static char sccsid[] = "%W% %G%";
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#ifndef OS2
+#if !defined(OS2) && !defined(_WIN32)
    #include <unistd.h>
 #else
    #include <io.h>
@@ -26,6 +26,7 @@ static char sccsid[] = "%W% %G%";
 
 #include "dict.h"
 #include "dictutil.h"
+#include "rogue.h"
 
 int   trace;
 FILE  *ft;
@@ -36,7 +37,7 @@ FILE  *ft;
 **  Return 0 on success; -1 on failure;
 ***********/
 
-int block_read( FILE *fi , char *buffer , long count , long offset )
+int block_read( FILE *fi , char *buffer , size_t count , long offset )
 {
    if ( fseek(fi,offset,SEEK_SET) == -1 )
       return( -1 );
@@ -51,7 +52,7 @@ int block_read( FILE *fi , char *buffer , long count , long offset )
 **  Return -1 on failure; 0 on success.
 ***********/
 
-int block_write( FILE *fo , char *buffer , long count )
+int block_write( FILE *fo , char *buffer , size_t count )
 {
    if ( fwrite(buffer,1,count,fo) != count )
       return( -1 );
@@ -83,13 +84,13 @@ void *dict_load_block( DICTIONARY *dict , char *toc_id ,
    if ( block == NULL ) {
       ptr = malloc( dt_entry->size );
       if ( trace > 3 ) {
-         fprintf( ft , "\ndict_load_block allocates %lx bytes at location %lx\n" ,
+         fprintf( ft , "\ndict_load_block allocates %lx bytes at location %p\n" ,
                    dt_entry->size , ptr );
       } /* endif */
    } else {
       ptr = block;
       if ( trace > 3 ) {
-         fprintf( ft , "\ndict_load_block uses memory at location %lx\n" , ptr );
+         fprintf( ft , "\ndict_load_block uses memory at location %p\n" , ptr );
       } /* endif */
    } /* endif */
    if ( ptr == NULL ) {
@@ -113,7 +114,7 @@ void *dict_load_block( DICTIONARY *dict , char *toc_id ,
    dt_entry->ptr = ptr;
 
    if ( trace > 3 ) {
-      fprintf( ft , "\nLoaded block\nTOC entry:    id:%s  offset:%lx  size:%lx  ptr:%lx  checksum:%lx  type:%d\n" ,
+      fprintf( ft , "\nLoaded block\nTOC entry:    id:%s  offset:%lx  size:%lx  ptr:%p  checksum:%lx  type:%d\n" ,
                dict->toc[index].id , dict->toc[index].offset ,
                dict->toc[index].size , dict->toc[index].ptr ,
                dict->toc[index].checksum , dict->toc[index].type );
@@ -160,7 +161,7 @@ BOOLEANC dict_save_block( DICTIONARY *dict , char *toc_id , FILE *fo )
    } /* endif */
 
    if ( trace > 3 ) {
-      fprintf( ft , "\nStored block\nTOC entry:           id:%s  offset:%lx  size:%lx  ptr:%lx  checksum:%lx  type:%d\n" ,
+      fprintf( ft , "\nStored block\nTOC entry:           id:%s  offset:%lx  size:%lx  ptr:%p  checksum:%lx  type:%d\n" ,
                dict->toc[index].id , dict->toc[index].offset ,
                dict->toc[index].size , dict->toc[index].ptr ,
                dict->toc[index].checksum , dict->toc[index].type );
@@ -190,9 +191,11 @@ int dict_toc_index( DICTIONARY *dict , char *toc_id )
 **  (Currently just returns 0.)
 ***********/
 
-unsigned long compute_checksum( int size , char *block )
+unsigned long compute_checksum( size_t size , char *block )
 {
-   return( 0 );
+    NOOP(size);
+    NOOP(block);
+    return( 0 );
 }
 
 /***********
@@ -218,11 +221,11 @@ DICT_PARM_ENTRY *dict_make_parm_entry( char *id , unsigned long value )
 ***********/
 
 int dict_parm_index( DICTIONARY *dict , char *parm_id )
-{  int index;
+{  long index;
 
    for ( index = 0 ; index < dict->sig->nparms ; index++ ) {
            if ( strcmp( dict->parm[index].id , parm_id ) == 0 )
-                   return( index );
+                   return( (int) index );
    } /* endfor */
 
    return( -1 );
@@ -234,7 +237,8 @@ int dict_parm_index( DICTIONARY *dict , char *parm_id )
 ***********/
 
 BOOLEANC dict_reset_toc_offsets( DICTIONARY *dict )
-{  int  i, offset;
+{  int  i;
+   long offset;
 
    offset = sizeof(DICT_SIG)
           + dict->sig->toc_size * sizeof(DICT_TOC_ENTRY);

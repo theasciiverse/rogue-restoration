@@ -29,7 +29,7 @@
 void
 do_passages(void)
 {
-    struct rdes *r1, *r2;
+    struct rdes *r1, *r2 = NULL;
     int i, j;
     int roomcount;
 
@@ -101,8 +101,8 @@ do_passages(void)
         else
         {
             r2->ingraph = TRUE;
-            i = r1 - rdes;
-            j = r2 - rdes;
+            i = (int)(r1 - rdes);
+            j = (int)(r2 - rdes);
             conn(i, j);
             r1->isconn[j] = TRUE;
             r2->isconn[i] = TRUE;
@@ -136,8 +136,8 @@ do_passages(void)
 
         if (j != 0)
         {
-            i = r1 - rdes;
-            j = r2 - rdes;
+            i = (int)(r1 - rdes);
+            j = (int)(r2 - rdes);
             conn(i, j);
             r1->isconn[j] = TRUE;
             r2->isconn[i] = TRUE;
@@ -153,12 +153,12 @@ do_passages(void)
 void
 conn(int r1, int r2)
 {
-    struct room *rpf, *rpt;
-    char    rmt;
-    int distance, turn_spot, turn_distance;
+    struct room *rpf, *rpt = NULL;
+    int    rmt;
+    int distance = 0, turn_spot = 0, turn_distance = 0;
     int rm;
     char    direc;
-    coord   delt, curr, turn_delta, spos, epos;
+    coord   delt = {0,0}, curr, turn_delta = {0,0}, spos = {0,0}, epos = {0,0};
 
     if (r1 < r2)
     {
@@ -251,7 +251,7 @@ conn(int r1, int r2)
     else
     {
         cmov(spos);
-        addch((char)'#');
+        addch('#');
     }
 
     if (!(rpt->r_flags & ISGONE))
@@ -259,7 +259,7 @@ conn(int r1, int r2)
     else
     {
         cmov(epos);
-        addch((char)'#');
+        addch('#');
     }
 
     /* Get ready to move... */
@@ -280,7 +280,7 @@ conn(int r1, int r2)
             while (turn_distance--)
             {
                 cmov(curr);
-                addch((char)PASSAGE);
+                addch(PASSAGE);
                 curr.x += turn_delta.x;
                 curr.y += turn_delta.y;
             }
@@ -288,7 +288,7 @@ conn(int r1, int r2)
         /* Continue digging along */
 
         cmov(curr);
-        addch((char)PASSAGE);
+        addch(PASSAGE);
         distance--;
     }
 

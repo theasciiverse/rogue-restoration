@@ -188,7 +188,7 @@ quaff(struct thing *quaffer, int which, int flags)
 
         case P_GAINABIL:
         {
-            short   ctype;
+            int   ctype;
 
             if (!is_potion || pstats.s_arm <= 0)
                 feel_message();
@@ -270,9 +270,9 @@ quaff(struct thing *quaffer, int which, int flags)
                     rnd_pos(rp, &pos);
 
                     if (rnd(2))
-                        ch = 'a' + rnd(26);
+                        ch = 'a' + ucrnd(26);
                     else
-                        ch = 'A' + rnd(26);
+                        ch = 'A' + ucrnd(26);
 
                     mvwaddch(hw, pos.y, pos.x, ch);
                 }
@@ -382,7 +382,7 @@ quaff(struct thing *quaffer, int which, int flags)
                         if (is_magic(OBJPTR(pitem)))
                         {
                             showit = TRUE;
-                            mvwaddch(hw, th->t_pos.y, th->t_pos.x,(char) MAGIC);
+                            mvwaddch(hw, th->t_pos.y, th->t_pos.x,MAGIC);
                         }
                     }
                 }
@@ -751,9 +751,9 @@ quaff(struct thing *quaffer, int which, int flags)
                 light_fuse(FUSE_UNDISGUISE, 0, blessed ? GONETIME * 3 : GONETIME, AFTER);
 
                 if (rnd(2))
-                    PLAYER = 'a' + rnd(26);
+                    PLAYER = 'a' + ucrnd(26);
                 else
-                    PLAYER = 'A' + rnd(26);
+                    PLAYER = 'A' + ucrnd(26);
 
                 light(&hero);
 
@@ -1114,7 +1114,7 @@ quaff(struct thing *quaffer, int which, int flags)
             if (get_string(buf, cw) == NORM)
             {
                 guess_items[TYP_POTION][which] =
-                    new(strlen(buf) + 1);
+                    new_alloc(strlen(buf) + 1);
                 strcpy(guess_items[TYP_POTION][which], buf);
             }
         }
@@ -1130,7 +1130,7 @@ quaff(struct thing *quaffer, int which, int flags)
 void
 lower_level(int who)
 {
-    int fewer, nsides, i;
+    int fewer, nsides = 0, i;
 
     if (--pstats.s_lvl == 0)
     {

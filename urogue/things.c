@@ -209,7 +209,7 @@ inv_name(struct object *obj, int lowercase)
 
         default:
             debug("Picked up something funny.");
-            sprintf(prbuf, "Something bizarre %s", unctrl((char)obj->o_type));
+            sprintf(prbuf, "Something bizarre %s", unctrl(obj->o_type));
             break;
     }
 
@@ -251,10 +251,10 @@ inv_name(struct object *obj, int lowercase)
     if (obj->o_flags & ISPROT)
         strcat(prbuf, " [protected]");
 
-    if (lowercase && isupper((int)prbuf[0]))
-        prbuf[0] = tolower((int)prbuf[0]);
-    else if (!lowercase && islower((int)*prbuf))
-        *prbuf = toupper((int)*prbuf);
+    if (lowercase && isupper(prbuf[0]))
+        prbuf[0] = (char) tolower(prbuf[0]);
+    else if (!lowercase && islower(*prbuf))
+        *prbuf = (char) toupper(*prbuf);
 
     if (!lowercase)
         strcat(prbuf, ".");
@@ -286,17 +286,19 @@ rem_obj(struct linked_list *item, int dis)
         attach(lvl_obj, llptr);
 
         op = OBJPTR(llptr);
-
-        if (op->next_obj = objptr->next_obj)
+	
+	op->next_obj = objptr->next_obj;
+        
+	if (op->next_obj)
             objptr->next_obj->l_prev = NULL;
 
         y = op->o_pos.y;
         x = op->o_pos.x;
 
         if (cansee(y, x))
-            mvwaddch(cw, y, x, (char)op->o_type);
+            mvwaddch(cw, y, x, op->o_type);
 
-        mvaddch(y, x, (char)op->o_type);
+        mvaddch(y, x, op->o_type);
     }
     else
     {
@@ -305,7 +307,7 @@ rem_obj(struct linked_list *item, int dis)
 
         /* problems if dropped in rock */
 
-        mvaddch(y,x,(char)(roomin((objptr->o_pos)) == NULL ? PASSAGE : FLOOR));
+        mvaddch(y,x,(roomin((objptr->o_pos)) == NULL ? PASSAGE : FLOOR));
     }
 
     if (dis)
@@ -337,7 +339,7 @@ add_obj(struct linked_list *item, int y, int x)
         objptr->next_obj = NULL;
         objptr->o_pos.y = y;
         objptr->o_pos.x = x;
-        mvaddch(y, x, (char) objptr->o_type);
+        mvaddch(y, x, objptr->o_type);
     }
 }
 
@@ -349,7 +351,7 @@ add_obj(struct linked_list *item, int y, int x)
 int
 drop(struct linked_list *item)
 {
-    char    ch = mvwinch(stdscr, hero.y, hero.x);
+    char    ch = CCHAR( mvwinch(stdscr, hero.y, hero.x) );
     struct object   *obj;
 
     switch (ch)
@@ -415,7 +417,7 @@ drop(struct linked_list *item)
     else            /* Link it into the level object list */
     {
         add_obj(item, hero.y, hero.x);
-        mvaddch(hero.y, hero.x, (char) obj->o_type);
+        mvaddch(hero.y, hero.x, obj->o_type);
     }
 
     if (obj->o_type == ARTIFACT)
@@ -535,8 +537,8 @@ new_thing(void)
     int j, k;
     struct linked_list  *item;
     struct object   *cur;
-    short   blesschance = rnd(100);
-    short   cursechance = rnd(100);
+    short   blesschance = srnd(100);
+    short   cursechance = srnd(100);
 
     item = new_item(sizeof *cur);
     cur = OBJPTR(item);
@@ -726,7 +728,7 @@ new_thing(void)
 */
 
 struct linked_list  *
-spec_item(int type, int which, int hitp, int damage)
+spec_item(char type, int which, int hitp, int damage)
 {
     struct linked_list  *item;
     struct object   *obj;
@@ -814,7 +816,7 @@ pick_one(struct magic_item *magic, int nitems)
         magic = start;
     }
 
-    return(magic - start);
+    return((int)(magic - start));
 }
 
 

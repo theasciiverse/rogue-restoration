@@ -13,11 +13,11 @@
 void
 ur_srandom(unsigned x)
 {
-    srandom(x);
+    md_srandom(x);
 }
 
 long
 ur_random(void)
 {
-    return( random() );
+    return( md_random() );
 }

@@ -129,7 +129,7 @@ do_rooms(void)
 
         if (rnd(100) < (has_gold ? 80 : 40))
         {
-            short   which;
+            int   which;
             int n, cnt;
 
             item = new_item(sizeof *tp);
@@ -243,7 +243,7 @@ draw_room(struct room *rp)
         move(rp->r_pos.y + j, rp->r_pos.x + 1);
 
         for (k = 1; k < rp->r_max.x - 1; k++)
-            addch((char)FLOOR);
+            addch(FLOOR);
     }
 }
 
@@ -256,7 +256,7 @@ void
 horiz(int cnt)
 {
     while(cnt--)
-        addch((char)'-');
+        addch('-');
 }
 
 /*
@@ -276,7 +276,7 @@ vert(int cnt)
     while(cnt--)
     {
         move(++y, x);
-        addch((char)'|');
+        addch('|');
     }
 }
 

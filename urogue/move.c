@@ -26,7 +26,7 @@
 */
 
 void
-do_run(int ch)
+do_run(char ch)
 {
     running = TRUE;
     after = FALSE;
@@ -54,7 +54,7 @@ step_ok(int y, int x, int can_on_monst, struct thing *flgptr)
     /* What is here?  Don't check monster window if MONSTOK is set */
 
     if (can_on_monst == MONSTOK)
-        ch = mvinch(y, x);
+        ch = CCHAR( mvinch(y, x) );
     else
         ch = winat(y, x);
 
@@ -87,7 +87,7 @@ step_ok(int y, int x, int can_on_monst, struct thing *flgptr)
             return(TRUE);
 
         default:
-            return(!isalpha((int)ch));
+            return(!isalpha(ch));
     }
 }
 
@@ -103,7 +103,7 @@ corr_move(int dy, int dx)
 {
     char    ch;
     short   legal = 0;  /* Number of legal alternatives */
-    int     y, x;       /* Holds legal new position */
+    int     y = 0, x = 0;   /* Holds legal new position */
     int    *ny, *nx;    /* Point to which direction to change */
 
     /* New position */
@@ -247,7 +247,7 @@ do_move(int dy, int dx)
 
     ch = winat(player.t_nxtpos.y, player.t_nxtpos.x);
 
-	if (isalpha((int) ch))
+	if (isalpha(ch))
 	    debug("Moving onto monster %c",ch);
     
 	/* Take care of hero trying to move close to something frightening */
@@ -266,7 +266,7 @@ do_move(int dy, int dx)
 
     /* Take care of hero being held */
 
-    if (on(player, ISHELD) && !isalpha((int)ch))
+    if (on(player, ISHELD) && !isalpha(ch))
     {
         if (rnd(pstats.s_str) > 14)
         {
@@ -292,10 +292,10 @@ do_move(int dy, int dx)
 
     /* assume he's not in a wall */
 
-    if (!isalpha((int)ch))
+    if (!isalpha(ch))
         turn_off(player, ISINWALL);
 
-    hch = mvinch(hero.y, hero.x);   /* Where hero was */
+    hch = CCHAR( mvinch(hero.y, hero.x) );   /* Where hero was */
     old_hero = hero;    /* Save hero's old position */
 
     switch (ch)
@@ -399,11 +399,11 @@ do_move(int dy, int dx)
         new_level(POSTLEV,0);
         return;
     }
-    else if (isalpha((int)ch))
+    else if (isalpha(ch))
     {
         struct linked_list  *mp;
         struct thing    *tp;
-        int t;
+        char t;
 
         running = FALSE;
 
@@ -418,7 +418,7 @@ do_move(int dy, int dx)
         {
             mvwaddch(cw, old_hero.y, old_hero.x, ch);
             mvwaddch(mw, old_hero.y, old_hero.x, ch);
-            mvwaddch(mw, hero.y, hero.x, (char) ' ');
+            mvwaddch(mw, hero.y, hero.x, ' ');
             mvwaddch(cw, hero.y, hero.x, tp->t_oldch);
 
             (*tp).t_pos.x = old_hero.x; /* Update monster position variables */
@@ -532,7 +532,7 @@ light(coord *cp)
                  * make sure that will happen.
                  */
 
-                if (isalpha((int)ch))
+                if (isalpha(ch))
                 {
                     struct thing    *tp;
 
@@ -546,7 +546,7 @@ light(coord *cp)
                     /* Previously not seen -- now can see it */
 
                     if (tp->t_oldch == ' ' && cansee(tp->t_pos.y, tp->t_pos.x))
-                        tp->t_oldch = mvinch(y, x);
+                        tp->t_oldch = CCHAR( mvinch(y, x) );
 
                     /* Previously seen -- now can't see it */
 
@@ -567,7 +567,7 @@ light(coord *cp)
                     (levtype == MAZELEV &&
                      !maze_view(y, x)))
                 {
-                    rch = mvwinch(cw, y, x);
+                    rch = CCHAR( mvwinch(cw, y, x) );
 
                     switch (rch)
                     {
@@ -686,12 +686,12 @@ show(int y, int x)
     struct linked_list  *it;
     struct thing    *tp;
 
-    if (isatrap((int)ch))
+    if (isatrap(ch))
     {
         struct trap *trp = trap_at(y, x);
         return (trp->tr_flags & ISFOUND) ? ch : trp->tr_show;
     }
-    else if (isalpha((int)ch))
+    else if (isalpha(ch))
     {
         if ((it = find_mons(y, x)) == NULL)
         {
@@ -706,16 +706,16 @@ show(int y, int x)
             rnd(100) < 90) || on(*tp, CANSURPRISE))
         {
             if (off(player, CANSEE) || on(*tp, CANSURPRISE))
-                ch = mvwinch(stdscr, y, x); /* Invisible */
+                ch = CCHAR( mvwinch(stdscr, y, x) ); /* Invisible */
         }
         else if (on(*tp, CANINWALL))
         {
             char    tch;
 
-            tch = mvwinch(stdscr, y, x);
+            tch = CCHAR( mvwinch(stdscr, y, x) );
 
             if (tch == WALL || tch == '-' || tch == '|')
-                ch = winch(stdscr); /* As Xorn */
+                ch = CCHAR( winch(stdscr) ); /* As Xorn */
         }
     }
     return(ch);
@@ -726,13 +726,13 @@ show(int y, int x)
         The guy stepped on a trap.... Make him pay.
 */
 
-int
+char
 be_trapped(struct thing *th, coord tc)
 {
     struct trap *tp;
-    char   ch, *mname;
+    char   ch, *mname = NULL;
     int    is_player = (th == &player), can_see = cansee(tc.y, tc.x);
-    struct linked_list  *mitem;
+    struct linked_list  *mitem = NULL;
 
     tp = trap_at(tc.y, tc.x);
     ch = tp->tr_type;
@@ -985,7 +985,7 @@ be_trapped(struct thing *th, coord tc)
                 if (isalpha(mvwinch(cw, th->t_pos.y, th->t_pos.x)))
                     mvwaddch(cw, th->t_pos.y, th->t_pos.x, th->t_oldch);
 
-                mvwaddch(mw, th->t_pos.y, th->t_pos.x, (char) ' ');
+                mvwaddch(mw, th->t_pos.y, th->t_pos.x, ' ');
 
                 /* Get a new position */
 
@@ -999,7 +999,7 @@ be_trapped(struct thing *th, coord tc)
                 /* Put it there */
 
                 mvwaddch(mw, th->t_pos.y, th->t_pos.x, th->t_type);
-                th->t_oldch = mvwinch(cw, th->t_pos.y, th->t_pos.x);
+                th->t_oldch = CCHAR( mvwinch(cw, th->t_pos.y, th->t_pos.x) );
 
                 if (can_see)
                     msg("The %s seems to have disappeared!", mname);
@@ -1680,10 +1680,10 @@ set_trap(struct thing *tp, int y, int x)
 {
     int is_player = (tp == &player);
     int selection = rnd(7) + 1;
-    char  ch, och;
+    char  ch = 0, och;
     int  thief_bonus = 0;
 
-    switch(och = mvinch(y, x))
+    switch(och = CCHAR( mvinch(y, x) ))
     {
         case WALL:
         case FLOOR:
@@ -1725,7 +1725,7 @@ set_trap(struct thing *tp, int y, int x)
         end_line();
         msg("Which trap? ");
 
-        selection = (short) ((wgetch(cw) & 0177) - '0');
+        selection = (short) ((readchar() & 0177) - '0');
 
         while (selection < 1 || selection > 7)
         {
@@ -1737,7 +1737,7 @@ set_trap(struct thing *tp, int y, int x)
 
             msg("");
             msg("Please enter a selection between 1 and 7:  ");
-            selection = (short) ((wgetch(cw) & 0177) - '0');
+            selection = (short) ((readchar() & 0177) - '0');
         }
     }
 

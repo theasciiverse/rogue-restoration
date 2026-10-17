@@ -168,7 +168,7 @@ void
 do_minor(struct object *tr)
 {
     int which;
-    unsigned long loss;
+    long loss;
 
     which = rnd(110);
 
@@ -239,7 +239,7 @@ do_minor(struct object *tr)
                      fallpos(hero, &traps[ntraps].tr_pos))
                  {
                     mvaddch(traps[ntraps].tr_pos.y, traps[ntraps].tr_pos.x,
-                       (char) FIRETRAP);
+                       FIRETRAP);
                     traps[ntraps].tr_type = FIRETRAP;
                     traps[ntraps].tr_flags = ISFOUND;
                     traps[ntraps].tr_show = FIRETRAP;
@@ -955,7 +955,7 @@ do_major(void)
                         break;
 
                     mvaddch(traps[ntraps].tr_pos.y, traps[ntraps].tr_pos.x,
-                        (char) FIRETRAP);
+                        FIRETRAP);
                     traps[ntraps].tr_type   = FIRETRAP;
                     traps[ntraps].tr_flags |= ISFOUND;
                     traps[ntraps].tr_show   = FIRETRAP;
@@ -1057,7 +1057,7 @@ do_phial(void)
 
     msg("How do you wish to apply the Phial of Galadriel (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1073,7 +1073,7 @@ do_phial(void)
         msg("");
         msg("Which power do you wish to use? ");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > 1)
         {
@@ -1086,7 +1086,7 @@ do_phial(void)
             msg("");
             msg("Please enter one of the listed powers: ");
 
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
         msg("Your attempt is successful.");
     }
@@ -1144,7 +1144,7 @@ do_palantir(void)
     if (is_carrying(TR_CROWN))
         limit += 1;
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1170,7 +1170,7 @@ do_palantir(void)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > limit)
         {
@@ -1181,7 +1181,7 @@ do_palantir(void)
             }
 
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
 
         msg("Your attempt is successful.");
@@ -1222,7 +1222,7 @@ do_silmaril(void)
     /* Prompt for action */
     msg("How do you wish to apply the Silamril of Ea (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1240,7 +1240,7 @@ do_silmaril(void)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > 2)
         {
@@ -1251,7 +1251,7 @@ do_silmaril(void)
             }
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
         msg("Your attempt is successful.");
     }
@@ -1291,7 +1291,7 @@ do_amulet(void)
     if (is_carrying(TR_PURSE))
         limit += 1;
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1310,7 +1310,7 @@ do_amulet(void)
         end_line();
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > limit)
         {
@@ -1322,7 +1322,7 @@ do_amulet(void)
 
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
 
         msg("Your attempt is successful.");
@@ -1354,7 +1354,7 @@ do_bag(struct object *obj)
     /* Prompt for action */
     msg("How do you wish to apply the Magic Purse of Yendor (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1381,7 +1381,7 @@ do_bag(struct object *obj)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > limit)
         {
@@ -1393,7 +1393,7 @@ do_bag(struct object *obj)
 
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
 
         msg("Your attempt is successful.");
@@ -1457,7 +1457,7 @@ do_sceptre(void)
     /* Prompt for action */
     msg("How do you wish to apply the Sceptre of Might (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1493,7 +1493,7 @@ do_sceptre(void)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > limit)
         {
@@ -1505,7 +1505,7 @@ do_sceptre(void)
 
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
 
         msg("Your attempt is successful.");
@@ -1594,7 +1594,7 @@ do_wand(void)
     /* Prompt for action */
     msg("How do you wish to apply the Wand of Yendor (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1616,7 +1616,7 @@ do_wand(void)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which >= maxsticks)
         {
@@ -1628,7 +1628,7 @@ do_wand(void)
 
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
         msg("Your attempt is successful.");
     }
@@ -1675,7 +1675,7 @@ do_crown(void)
     /* Prompt for action */
     msg("How do you wish to apply the Crown of Might (* for list)? ");
 
-    which = (short) ((wgetch(cw) & 0177) - 'a');
+    which = (short) ((readchar() & 0177) - 'a');
 
     if (which == (short) ESCAPE - (short) 'a')
     {
@@ -1715,7 +1715,7 @@ do_crown(void)
 
         msg("Which power do you wish to use?");
 
-        which = (short) ((wgetch(cw) & 0177) - 'a');
+        which = (short) ((readchar() & 0177) - 'a');
 
         while (which < 0 || which > limit)
         {
@@ -1726,7 +1726,7 @@ do_crown(void)
             }
             msg("");
             msg("Please enter one of the listed powers: ");
-            which = (short) ((wgetch(cw) & 0177) - 'a');
+            which = (short) ((readchar() & 0177) - 'a');
         }
 
         msg("Your attempt is successful.");
@@ -1870,7 +1870,7 @@ void
 level_eval(void)
 {
     int cnt = 0;
-    unsigned long max_nasty = 0;
+    long max_nasty = 0;
     struct linked_list  *item;
     struct thing    *tp;
     char    *colour, *temp;

@@ -18,6 +18,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "rogue.h"
 
 static char errbuf[2 * LINELEN];
@@ -32,9 +33,9 @@ static char errbuf[2 * LINELEN];
 */
 
 void *
-ur_alloc(unsigned int size)
+ur_alloc(size_t size)
 {
-    char *buf_p, *tmp_p;
+    char *buf_p;
 
     total++;
 
@@ -119,8 +120,6 @@ _attach_after(linked_list **list_pp, linked_list *list_p, linked_list *new_p)
 
     if (next(list_p) != NULL)  /* something after this one? */
     {
-        linked_list *next_p;
-
         new_p->l_next = next(list_p);
         list_p->l_next->l_prev = new_p;
     }
@@ -186,7 +185,7 @@ new_item(int size)
     if ((item = new_list()) == NULL)
         msg("Ran out of memory for header after %d items.", total);
 
-    if ((item->data.l_data = new(size)) == NULL)
+    if ((item->data.l_data = new_alloc(size)) == NULL)
         msg("Ran out of memory for data after %d items.", total);
 
     item->l_next = item->l_prev = NULL;
@@ -195,7 +194,7 @@ new_item(int size)
 }
 
 void *
-new(unsigned int size)
+new_alloc(size_t size)
 {
     void *space = ur_alloc(size);
 

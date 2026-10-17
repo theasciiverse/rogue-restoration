@@ -13,6 +13,7 @@
 
 #include "dict.h"
 #include "memory.h"
+#include "rogue.h"
 
 static char sccsid[] = "%W%\t%G%";
 
@@ -131,7 +132,7 @@ void *mem_malloc(const size_t bytes)
 
 	/* if allocation succeeded, set management data */
 	if (mem_temp != NULL) {
-		long i;
+		size_t i;
 		char *end;
 
 		/* do beginning marker bytes */
@@ -162,7 +163,7 @@ void *mem_malloc(const size_t bytes)
 		long temp;
 
 		sprintf(key, "%p", mem_temp);
-		if (dict_insert(allocations, key, 1, bytes, mem_temp, &temp) == NULL) {
+		if (dict_insert(allocations, key, 1, (const unsigned long) bytes, mem_temp, &temp) == NULL) {
 			fprintf(trace_file, "!!! Insert of pointer tracking info failed\n");
 			abort();
 		}
@@ -322,7 +323,7 @@ void *mem_realloc(const void *ptr, const size_t new_size)
 		long temp;
 
 		sprintf(key, "%p", mem_temp);
-		if (dict_insert(allocations, key, 1, new_size, mem_temp, &temp) == NULL) {
+		if (dict_insert(allocations, key, 1, (const unsigned long)new_size, mem_temp, &temp) == NULL) {
 			fprintf(trace_file, "!!! Insert of pointer tracking info failed\n");
 			abort();
 		}
@@ -342,7 +343,7 @@ int mem_validate(void *ptr)
 {
 	unsigned char *mem_temp = (unsigned char *)ptr;
 	size_t mem_size;
-	long i;
+	size_t i;
 
 	/* NULL pointers are always valid */
 	if (ptr == NULL)
@@ -365,7 +366,7 @@ int mem_validate(void *ptr)
 		}
 
 		/* point to size bytes */
-		mem_temp = (char *)ptr - sizeof(size_t);
+		mem_temp = (unsigned char *)ptr - sizeof(size_t);
 
 		/* get user size */
 		mem_size = *(size_t *)mem_temp;
@@ -381,7 +382,7 @@ int mem_validate(void *ptr)
 	}
 
 	/* check the header bytes */
-	mem_temp = (char *) ptr - FENCE_SIZE;
+	mem_temp = (unsigned char *) ptr - FENCE_SIZE;
 	if (memdebug_level > 0)
 		fprintf(trace_file, "+++ Real pointer at %p\n", mem_temp);
 
@@ -403,7 +404,7 @@ int mem_validate(void *ptr)
 
 
 	/* now point to where trailer should be */
-	mem_temp = (char *)ptr + i;
+	mem_temp = (unsigned char *)ptr + i;
 	for (i = 0; i < FENCE_SIZE; i++)
 		if (*mem_temp++ != 145) {
 			if (memdebug_level > 0) {

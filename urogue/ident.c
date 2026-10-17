@@ -120,7 +120,7 @@ unprint_id(char *print_id)
         if (*id_p == *print_id)
             break;
 
-    return( (char) (id_p - print_letters) );
+    return( (int) (id_p - print_letters) );
 }
 
 /*

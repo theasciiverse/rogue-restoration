@@ -200,7 +200,7 @@ push_bag(linked_list **bag_pp, object *obj_p)
 struct object *
 scan_bag(linked_list *bag_p, int type, int id)
 {
-    object  *obj_p;
+    object  *obj_p = NULL;
 
     for (; bag_p != NULL; bag_p = next(bag_p))
     {
@@ -224,8 +224,11 @@ scan_bag(linked_list *bag_p, int type, int id)
 */
 
 int
-baf_decrement_test(struct object *obj_p, bag_arg *count_p, int id) /*ARGSUSED*/
+baf_decrement_test(struct object *obj_p, bag_arg *count_p, int id)
 {
+    NOOP(obj_p);
+    NOOP(id);
+
     if (*count_p->iarg > 0)
         return(TRUE);
 
@@ -241,10 +244,13 @@ baf_decrement_test(struct object *obj_p, bag_arg *count_p, int id) /*ARGSUSED*/
 */
 
 int
-baf_identify(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
+baf_identify(struct object *obj_p, bag_arg *junk, int id)
 {
     linked_list l;
     linked_list *lp = &l;
+
+    NOOP(junk);
+    NOOP(id);
 
     lp->data.obj = obj_p;    /* stuff object in the right place */
     whatis(lp);
@@ -260,8 +266,11 @@ baf_identify(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
 */
 
 int
-baf_increment(object *obj_p, bag_arg *count_p, int id) /*ARGSUSED*/
+baf_increment(object *obj_p, bag_arg *count_p, int id)
 {
+    NOOP(obj_p);
+    NOOP(id);
+
     (*count_p->iarg)++;
 
     return(TRUE);
@@ -319,8 +328,10 @@ bff_group(struct object *obj_p, bag_arg *arg)
 */
 
 int
-bff_callable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
+bff_callable(struct object *obj_p, bag_arg *junk)
 {
+    NOOP(junk);
+
     if (obj_p->o_type == POTION || obj_p->o_type == RING ||
         obj_p->o_type == STICK || obj_p->o_type == SCROLL)
         return(TRUE);
@@ -334,8 +345,10 @@ bff_callable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
 */
 
 int
-bff_markable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
+bff_markable(struct object *obj_p, bag_arg *junk)
 {
+    NOOP(junk);
+
     if (obj_p->o_type == GOLD)
         return(FALSE);
 
@@ -348,8 +361,10 @@ bff_markable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
 */
 
 int
-bffron(object *obj_p, bag_arg *junk) /*ARGSUSED*/
+bffron(object *obj_p, bag_arg *junk)
 {
+    NOOP(junk);
+
     return(cur_ring[LEFT_1] == obj_p || cur_ring[LEFT_2] == obj_p ||
         cur_ring[LEFT_3] == obj_p || cur_ring[LEFT_4] == obj_p ||
         cur_ring[LEFT_5] ||
@@ -365,8 +380,10 @@ bffron(object *obj_p, bag_arg *junk) /*ARGSUSED*/
 */
 
 int
-bff_zappable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
+bff_zappable(struct object *obj_p, bag_arg *junk)
 {
+    NOOP(junk);
+
     if (obj_p->o_type == STICK)
         return(TRUE);
 
@@ -382,8 +399,11 @@ bff_zappable(struct object *obj_p, bag_arg *junk) /*ARGSUSED*/
 */
 
 int
-baf_curse(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
+baf_curse(struct object *obj_p, bag_arg *junk, int id)
 {
+    NOOP(junk);
+    NOOP(id);
+
     if (obj_p->o_type != ARTIFACT && rnd(8) == 0)
     {
         obj_p->o_flags |= ISCURSED;
@@ -399,8 +419,11 @@ baf_curse(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
 */
 
 int
-bafcweapon(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
+bafcweapon(struct object *obj_p, bag_arg *junk, int id)
 {
+    NOOP(junk);
+    NOOP(id);
+
     if (obj_p == cur_weapon)
         return(FALSE); /* found what we wanted - stop and return it */
 
@@ -413,8 +436,11 @@ bafcweapon(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
 */
 
 int
-bafcarmor(struct object *obj_p, bag_arg *junk, int id) /*ARGSUSED*/
+bafcarmor(struct object *obj_p, bag_arg *junk, int id)
 {
+    NOOP(junk);
+    NOOP(id);
+
     if (obj_p == cur_armor)
         return(FALSE); /* found what we wanted - stop and return it */
 

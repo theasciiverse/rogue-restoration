@@ -49,7 +49,7 @@ typedef struct string_entry {
 typedef struct dict_sig_ {      /*  Dictionary signature               */
    unsigned long  check_value;  /*  0xdeadbeef                         */
    int            toc_size;     /*  # of entries in Table of Contents  */
-   int            nparms;       /*  # of parameters                    */
+   long           nparms;       /*  # of parameters                    */
    unsigned long  checksum;     /*  Checksum for TOC                   */
 } DICT_SIG;
 
@@ -58,8 +58,8 @@ typedef struct dict_sig_ {      /*  Dictionary signature               */
   ----------------------------------*/
 typedef struct TOC_entry_ {     /*  Dictionary table of contents entry  */
    char           id[5];        /*  Field identifier:                   */
-   unsigned long  offset;       /*  Offset (bytes) of entry in file     */
-   unsigned long  size;         /*  Size (bytes) of entry               */
+   long           offset;       /*  Offset (bytes) of entry in file     */
+   long           size;         /*  Size (bytes) of entry               */
    void           *ptr;         /*  Where entry is stored in memory     */
    unsigned long  checksum;     /*  Checksum of entry                   */
    int            type;         /*  0=ordinary ; 1=EVECTOR ; 2=NULL     */

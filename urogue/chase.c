@@ -39,10 +39,10 @@ do_chase(struct thing *th, int flee)
     int last_door = -1;     /* Door we just came from */
     int stoprun = FALSE;    /* TRUE means we are there */
     int rundoor;            /* TRUE means run to a door */
-    int hit_bad;            /* TRUE means hit bad monster */
+    int hit_bad = FALSE;    /* TRUE means hit bad monster */
     int mon_attack;         /* TRUE means find a monster to hit */
 
-    int    sch;
+    char    sch;
     struct linked_list *item;
     coord   this;           /* Temporary destination for chaser */
 
@@ -79,7 +79,9 @@ do_chase(struct thing *th, int flee)
     {
         struct linked_list  *mon_to_hit;
 
-        if ((mon_to_hit = f_mons_a(th->t_pos.y, th->t_pos.x, hit_bad)))
+	mon_to_hit = f_mons_a(th->t_pos.y, th->t_pos.x, hit_bad);
+
+        if (mon_to_hit)
         {
             mon_mon_attack(th, mon_to_hit, pick_weap(th), NOTHROWN);
             return;
@@ -256,7 +258,7 @@ do_chase(struct thing *th, int flee)
     }
 
     mvwaddch(cw, th->t_pos.y, th->t_pos.x, th->t_oldch);
-    sch = mvwinch(cw, th->t_nxtpos.y, th->t_nxtpos.x);
+    sch = CCHAR( mvwinch(cw, th->t_nxtpos.y, th->t_nxtpos.x) );
 
     /* Get old and new room of monster */
     old_room = roomin(th->t_pos);
@@ -312,7 +314,7 @@ do_chase(struct thing *th, int flee)
       off(*th, CANSURPRISE))
         mvwaddch(cw, th->t_nxtpos.y, th->t_nxtpos.x, th->t_type);
 
-    mvwaddch(mw, th->t_pos.y, th->t_pos.x, (char) ' ');
+    mvwaddch(mw, th->t_pos.y, th->t_pos.x, ' ');
     mvwaddch(mw, th->t_nxtpos.y, th->t_nxtpos.x, th->t_type);
 
     /* Record monster's last position (if new one is different) */
@@ -324,7 +326,7 @@ do_chase(struct thing *th, int flee)
 
     /* If the monster is on a trap, trap it */
 
-    sch = mvinch(th->t_nxtpos.y, th->t_nxtpos.x);
+    sch = CCHAR(mvinch(th->t_nxtpos.y, th->t_nxtpos.x));
 
     if (isatrap(sch))
     {
@@ -393,7 +395,7 @@ chase(struct thing *tp, coord *ee, int flee)
     struct linked_list  *weapon;
     coord   *er = &tp->t_pos;
     coord shoot;
-    coord *shootit_dir;
+    coord *shootit_dir = NULL;
     int ch;
     char   mch;
     int    next_player = FALSE;
@@ -451,7 +453,7 @@ chase(struct thing *tp, coord *ee, int flee)
          (off(player, ISDISGUISE) || (rnd(tp->t_stats.s_lvl) > 6)) &&
          (DISTANCE(*er, *ee) < BOLT_LENGTH * BOLT_LENGTH))
     {
-        short   chance;
+        int   chance;
         char    *breath;
 
         /* Will it breathe at random */
@@ -571,18 +573,23 @@ chase(struct thing *tp, coord *ee, int flee)
         tp->t_nxtpos = *er;
         dist = DISTANCE(tp->t_nxtpos, *ee);
     }
-    else if (shootit_dir && on(*tp, CANSHOOT) && (weapon = get_hurl(tp)) &&
+    else if (shootit_dir && on(*tp, CANSHOOT)) 
+    {
+	weapon = get_hurl(tp);
+	
+	if (weapon &&
          (off(*tp, ISFLEE) || rnd(DISTANCE(*er, *ee)) > 2) &&
          (off(player, ISDISGUISE) || (rnd(tp->t_stats.s_lvl) > 6)))
-    {
-        /*
-            Should we shoot or throw something? fleeing monsters may to shoot
-            anyway if far enough away
-        */
+	{
+	    /*
+	        Should we shoot or throw something? fleeing monsters 
+		may to shoot anyway if far enough away
+	    */
 
-        missile(shootit_dir->y, shootit_dir->x, weapon, tp);
-        tp->t_nxtpos = *er;
-        dist = DISTANCE(tp->t_nxtpos, *ee);
+	    missile(shootit_dir->y, shootit_dir->x, weapon, tp);
+	    tp->t_nxtpos = *er;
+	    dist = DISTANCE(tp->t_nxtpos, *ee);
+	}
     }
     else
     {
@@ -645,7 +652,7 @@ chase(struct thing *tp, coord *ee, int flee)
                  */
 
                 if (!ce(tryp, *er) && !ce(tryp, tp->t_oldpos) &&
-                    isalpha((int)(mch = mvwinch(mw, y, x))))
+                    isalpha( (mch = CCHAR(mvwinch(mw, y, x))) ) )
                 {
                     int test_dist;
 
@@ -656,7 +663,7 @@ chase(struct thing *tp, coord *ee, int flee)
 
                         /* Could we really move there? */
 
-                        mvwaddch(mw, y, x, (char) ' '); /* Temp blank monst */
+                        mvwaddch(mw, y, x, ' '); /* Temp blank monst */
 
                         if (diag_ok(er, &tryp, tp))
                             monst_dist = test_dist;
@@ -952,7 +959,9 @@ find_shoot(struct thing *tp, coord *dir)
         {
             if (row > 0 && col > 0 && isalpha(mvwinch(mw, row, col)))
             {
-                if ((mon = find_mons(row, col)))
+		mon = find_mons(row, col);
+
+                if (mon)
                 {
                     ick = THINGPTR(mon);
                     xmon = ick->t_pos.x;
@@ -1220,7 +1229,7 @@ pick_weap(struct thing *tp)
 int
 can_blink(struct thing *tp)
 {
-    short   y, x, index = 9;
+    int   y, x, index = 9;
     coord   tryp;       /* To hold the coordinates for use in diag_ok */
     int    spots[9], found_one = FALSE;
 
@@ -1298,7 +1307,7 @@ can_blink(struct thing *tp)
 
         /* Move it to the new space */
 
-        tp->t_oldch = mvwinch(cw, y, x);
+        tp->t_oldch = CCHAR( mvwinch(cw, y, x) );
 
         if (cansee(y, x) &&
             off(*tp, ISINWALL) &&
@@ -1307,7 +1316,7 @@ can_blink(struct thing *tp)
             off(*tp, CANSURPRISE))
             mvwaddch(cw, y, x, tp->t_type);
 
-        mvwaddch(mw, tp->t_pos.y,tp->t_pos.x,(char)' '); /*Clear old position */
+        mvwaddch(mw, tp->t_pos.y,tp->t_pos.x,' '); /*Clear old position */
         mvwaddch(mw, y, x, tp->t_type);
         tp->t_pos.y = y;
         tp->t_pos.x = x;

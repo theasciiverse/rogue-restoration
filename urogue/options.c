@@ -57,7 +57,7 @@ option(void)
     {
         waddstr(hw, op->o_prompt);
         (*op->o_putfunc)(&op->o_opt, hw);
-        waddch(hw, (char) '\n');
+        waddch(hw, '\n');
     }
 
     /* Set values */
@@ -68,12 +68,14 @@ option(void)
     {
         waddstr(hw, op->o_prompt);
 
-        if ((retval = (*op->o_getfunc)(&op->o_opt, hw)))
+	retval = (*op->o_getfunc)(&op->o_opt, hw);
+
+        if (retval)
             if (retval == QUIT)
                 break;
             else if (op > optlist)      /* MINUS */
             {
-                wmove(hw, (op - optlist) - 1, 0);
+                wmove(hw, (int)(op - optlist) - 1, 0);
                 op -= 2;
             }
             else    /* trying to back up beyond the top */
@@ -184,7 +186,7 @@ get_bool(opt_arg *opt, WINDOW *win)
         wmove(win, oy, ox);
         wrefresh(win);
 
-        switch (wgetch(win))
+        switch (readcharw(win))
         {
             case 't':
             case 'T':
@@ -218,7 +220,7 @@ get_bool(opt_arg *opt, WINDOW *win)
     wmove(win, oy, ox);
     wclrtoeol(win);
     waddstr(win, *opt->iarg ? "True" : "False");
-    waddch(win, (char) '\n');
+    waddch(win, '\n');
 
     return(NORM);
 }
@@ -255,7 +257,7 @@ get_abil(opt_arg *opt, WINDOW *win)
         wmove(win, oy, ox);
         wrefresh(win);
 
-        switch(wgetch(win))
+        switch(readcharw(win))
         {
             case '\n':
             case '\r':
@@ -277,7 +279,7 @@ get_abil(opt_arg *opt, WINDOW *win)
     wmove(win, ny, nx + 5);
     wclrtoeol(win);
     wmove(win, ny, nx);
-    waddch(win, (char) '\n');
+    waddch(win, '\n');
 
     return(NORM);
 }
@@ -301,7 +303,7 @@ parse_opts(char *str)
 
     while (*str)
     {
-        for (sp = str; isalpha((int)*sp); sp++)
+        for (sp = str; isalpha(*sp); sp++)
             continue;
 
         len = sp - str;
@@ -344,8 +346,8 @@ parse_opts(char *str)
 
                         len = strlen(value);
 
-                        if (isupper((int)value[0]))
-                            value[0] = tolower((int)value[0]);
+                        if (isupper(value[0]))
+                            value[0] = (char) tolower(value[0]);
                         if (EQSTR(value, "overwrite",len))
                             *opt = INV_OVER;
                         if (EQSTR(value, "slow", len))
@@ -359,8 +361,8 @@ parse_opts(char *str)
 
                         len = strlen(value);
 
-                        if (isupper((int)value[0]))
-                            value[0] = tolower((int)value[0]);
+                        if (isupper(value[0]))
+                            value[0] = (char) tolower(value[0]);
                         if (EQSTR(value, "fighter", len))
                             *opt = C_FIGHTER;
                         else if (EQSTR(value, "magic", min(len, 5)))
@@ -395,7 +397,7 @@ parse_opts(char *str)
 
         /* skip to start of next option name  */
 
-        while (*sp && !isalpha((int)*sp))
+        while (*sp && !isalpha(*sp))
             sp++;
 
         str = sp;
@@ -454,7 +456,7 @@ get_inv(opt_arg *opt, WINDOW *win)
         wmove(win, oy, ox);
         wrefresh(win);
 
-        switch(wgetch(win))
+        switch(readcharw(win))
         {
             case '\n':
             case '\r':

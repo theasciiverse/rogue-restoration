@@ -34,7 +34,8 @@ void
 prayer(void)
 {
     int chance, i, times;
-    char    ch, num_str[20];
+    char num_str[20];
+    int ch;
     struct linked_list  *item;
     struct thing    *tp;
     int  is_godly;
@@ -42,9 +43,9 @@ prayer(void)
     if (player.t_praycnt > pstats.s_lvl)
     {
         msg("Are you sure you want to bother the gods?");
-        ch = wgetch(cw);
+        ch = readchar();
 
-        if (tolower((int)ch) != 'y')
+        if (tolower(ch) != 'y')
         {
             after = FALSE;
             return;
@@ -54,9 +55,6 @@ prayer(void)
     }
 
     msg("You are surrounded by orange smoke...");
-
-    pstats.s_hpt = max_stats.s_hpt;
-    pstats.s_power = max_stats.s_power;
 
     if (rnd(3) == 0)
         luck--;
@@ -79,7 +77,7 @@ prayer(void)
         msg("What roll?[0..%d] ", 99);
         ch = get_string(num_str, cw);
 
-        if (ch == ESCAPE)
+        if (ch == QUIT)
         {
             msg("");
             return;
@@ -102,6 +100,9 @@ prayer(void)
     if (chance == 0)
     {
         msg("The heavens open and glorious radiance surrounds you!");
+
+        pstats.s_hpt = max_stats.s_hpt;
+        pstats.s_power = max_stats.s_power;
 
         if (is_godly)
             times = 8;
@@ -254,7 +255,7 @@ gsense(void)
             if (cur->o_type == GOLD)
             {
                 gtotal += cur->o_count;
-                mvwaddch(hw, cur->o_pos.y, cur->o_pos.x, (char) GOLD);
+                mvwaddch(hw, cur->o_pos.y, cur->o_pos.x, GOLD);
 
             }
         }
@@ -338,7 +339,7 @@ steal(void)
          5 * (tp->t_stats.s_lvl - 3)))
     {
         struct linked_list  *s_item, *pack_ptr;
-        short   cnt = 0;
+        int   cnt = 0;
 
         s_item = NULL;  /* Start stolen goods out as nothing */
 
@@ -522,7 +523,7 @@ undead_sense(void)
 
         if (on(*tp, ISUNDEAD))
         {
-            mvwaddch(hw, tp->t_pos.y, tp->t_pos.x, (char) '&');
+            mvwaddch(hw, tp->t_pos.y, tp->t_pos.x, '&');
             showit = TRUE;
         }
     }

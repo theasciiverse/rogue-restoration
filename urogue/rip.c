@@ -30,8 +30,8 @@ static struct sc_ent
     long    sc_gold;
     int sc_flags;
     int sc_level;
-    short   sc_artifacts;
-    short   sc_monster;
+    int   sc_artifacts;
+    int   sc_monster;
 } top_ten[10];
 
 
@@ -162,23 +162,23 @@ death(int monst)
     while (*dp)
         printw("%s\n", *dp++);
 
-    mvaddstr(14, 28 - ((strlen(whoami) + 1) / 2), whoami);
+    mvaddstr(14, 28 - ((int)(strlen(whoami) + 1) / 2), whoami);
     sprintf(buf, "%d+%ld Points", pstats.s_lvl, pstats.s_exp);
-    mvaddstr(15, 28 - ((strlen(buf) + 1) / 2), buf);
+    mvaddstr(15, 28 - ((int)(strlen(buf) + 1) / 2), buf);
     killer = killname(monst,buf);
-    mvaddstr(17, 28 - ((strlen(killer) + 1) / 2), killer);
+    mvaddstr(17, 28 - ((int)(strlen(killer) + 1) / 2), killer);
     mvaddstr(18, 28, (sprintf(prbuf, "%2d", lt->tm_year), prbuf));
     move(LINES - 1, 0);
 
     mvaddstr(LINES - 1, 0, retstr);
 
-    while ((c = wgetch(stdscr)) != '\n' && c != '\r')
+    while ((c = readcharw(stdscr)) != '\n' && c != '\r')
         continue;
     idenpack();
     wrefresh(cw);
     refresh();
 
-    score((long) pstats.s_exp, pstats.s_lvl, KILLED, monst);
+    score(pstats.s_exp, pstats.s_lvl, KILLED, monst);
     byebye();
 }
 
@@ -232,12 +232,12 @@ score(long amount, int lvl, int flags, int monst) /*ARGSUSED*/
         scp->sc_score = 0L;
 
         for (i = 0; i < 76; i++)
-            scp->sc_name[i] = rnd(255);
+            scp->sc_name[i] = ucrnd(255);
 
         scp->sc_gold = 0L;
         scp->sc_flags = rnd(10);
         scp->sc_level = rnd(10);
-        scp->sc_monster = rnd(10);
+        scp->sc_monster = srnd(10);
         scp->sc_artifacts = 0;
     }
 
@@ -290,7 +290,7 @@ score(long amount, int lvl, int flags, int monst) /*ARGSUSED*/
                 scp->sc_level = level;
 				
             scp->sc_monster = monst;
-			scp->sc_artifacts = has_artifact;
+	    scp->sc_artifacts = has_artifact;
 
             sc2 = scp;
         }
@@ -475,9 +475,9 @@ total_winner(void)
     refresh();
 
     if (has_artifact == 255)
-        score((long) pstats.s_exp, pstats.s_lvl, TOTAL, 0);
+        score(pstats.s_exp, pstats.s_lvl, TOTAL, 0);
     else
-        score((long) pstats.s_exp, pstats.s_lvl, WINNER, 0);
+        score(pstats.s_exp, pstats.s_lvl, WINNER, 0);
 
     byebye();
 }

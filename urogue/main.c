@@ -39,7 +39,7 @@ main(int argc, char *argv[])
     char    *env;
     time_t lowtime;
     time_t    now;
-    int rflag;
+    int rflag = 0;
     char *nm;
 	float scale;
 
@@ -95,7 +95,7 @@ main(int argc, char *argv[])
 		
 	lowtime = time(&now);
 	
-	dnum = (wizard && getenv("SEED") != NULL ? atoi( getenv("SEED")) : lowtime);
+	dnum = (wizard && getenv("SEED") != NULL ? atoi( getenv("SEED")) : (int)lowtime);
 	
 	ur_srandom(dnum);
 
@@ -115,7 +115,7 @@ main(int argc, char *argv[])
 
     /* put a copy of fruit in the right place */
 
-    fd_data[1].mi_name = strdup(fruit); 
+    fd_data[1].mi_name = md_strdup(fruit); 
 
     /* print scores */
 
@@ -157,10 +157,10 @@ main(int argc, char *argv[])
     noecho();           /* Echo off */
     nonl();
 	
-	scale = (float) (LINES * COLS) / (80.0 * 25.0); /* get food right for     */
+    scale = (float) (LINES * COLS) / (80.0F * 25.0F); /* get food right for     */
 	                                              /* different screen sizes */
 												  
-	food_left *= scale;
+    food_left = (int) (food_left * scale);
 
     /* Set up windows */
 
@@ -237,6 +237,18 @@ fatal(char *s)
         Pick a very random number.
 */
 
+unsigned char
+ucrnd(unsigned char range)
+{
+    return (unsigned char)(range <= 0 ? 0 : (ur_random() & 0x7fffffffL) % range);
+}
+
+short
+srnd(short range)
+{
+    return (short)(range <= 0 ? 0 : (ur_random() & 0x7fffffffL) % range);
+}
+
 int
 rnd(int range)
 {
@@ -254,7 +266,7 @@ ulrnd(unsigned long range)
         roll a number of dice
 */
 
-unsigned int
+int
 roll(int number, int sides)
 {
     int dtotal = 0;

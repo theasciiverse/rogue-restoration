@@ -37,6 +37,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include "rogue.h"
 
 /*
@@ -139,7 +140,7 @@ int  wiz_verbose     = TRUE;
 int  moving          = FALSE;
 coord    delta;                     /* Change indicated to get_dir()    */
 LEVTYPE  levtype;                   /* type of level i'm on             */
-unsigned long purse  = 0;
+long purse  = 0;
 unsigned long total  = 0;
 
 WINDOW  *cw;                        /* Window that the player sees      */
@@ -182,7 +183,7 @@ char score_file[2 * LINELEN];       /* Score file name */
 #define URS_DAEMONS      0xABCD000E
 
 void
-ur_write(FILE *savef, void *ptr, int size)
+ur_write(FILE *savef, void *ptr, size_t size)
 {
     if (size == 0)
         return;
@@ -191,7 +192,7 @@ ur_write(FILE *savef, void *ptr, int size)
 }
 
 void
-ur_read(FILE *savef, void *ptr, int size)
+ur_read(FILE *savef, void *ptr, size_t size)
 {
     if (size == 0)
         return;
@@ -248,9 +249,25 @@ ur_read_long(FILE *savef)
 }
 
 void
+ur_write_ulong(FILE *savef, unsigned long c)
+{
+    ur_write(savef,&c,sizeof(unsigned long));
+}
+
+unsigned long
+ur_read_ulong(FILE *savef)
+{
+    long l;
+
+    ur_read(savef, &l, sizeof(unsigned long));
+
+    return(l);
+}
+
+void
 ur_unread_long(FILE *savef)
 {
-    fseek(savef, -sizeof(long), SEEK_CUR);
+    fseek(savef, -(long)sizeof(long), SEEK_CUR);
 }
 
 void
@@ -276,7 +293,7 @@ ur_write_string(FILE *savef, char *s)
 
     len = (s == NULL) ? 0L : strlen(s) + 1 ;
 
-    ur_write_long(savef, len);
+    ur_write_long(savef, (long) len);
     ur_write(savef,s,len);
 }
 
@@ -333,7 +350,7 @@ ur_write_room(FILE *savef, struct room *r)
 
     ur_write_int(savef, r->r_flags);
     ur_write_int(savef, r->r_nexits);
-    ur_write_short(savef, r->r_flags);
+    ur_write_int(savef, r->r_flags);
 }
 
 struct room *
@@ -369,7 +386,7 @@ ur_write_object(FILE *savef, struct object *o)
     ur_write_string(savef,    o->o_hurldmg);
     ur_write_long(savef,      o->o_flags);
     ur_write_long(savef,      o->ar_flags);
-    ur_write_int(savef,       o->o_type);
+    ur_write_char(savef,       o->o_type);
     ur_write_int(savef,       o->o_ident);
     ur_write_int(savef,       o->o_count);
     ur_write_int(savef,       o->o_which);
@@ -421,7 +438,7 @@ ur_read_object(FILE *savef)
     o->o_hurldmg = ur_read_string(savef);
     o->o_flags = ur_read_long(savef);
     o->ar_flags = ur_read_long(savef);
-    o->o_type = ur_read_int(savef);
+    o->o_type = ur_read_char(savef);
     o->o_ident = ur_read_int(savef);
     o->o_count = ur_read_int(savef);
     o->o_which = ur_read_int(savef);
@@ -697,7 +714,7 @@ ur_read_monsters(FILE *savef)
 {
     long id;
     int i,cnt;
-    struct linked_list *l=NULL, *previous = NULL, *head;
+    struct linked_list *l=NULL, *previous = NULL, *head = NULL;
 
     id = ur_read_long(savef);
 
@@ -856,13 +873,13 @@ ur_write_stats(FILE *savef, struct stats *s)
     ur_write_int(savef, s->s_lvl);
     ur_write_int(savef, s->s_arm);
     ur_write_int(savef, s->s_acmod);
-    ur_write_short(savef, s->s_power);
-    ur_write_short(savef, s->s_str);
-    ur_write_short(savef, s->s_intel);
-    ur_write_short(savef, s->s_wisdom);
-    ur_write_short(savef, s->s_dext);
-    ur_write_short(savef, s->s_const);
-    ur_write_short(savef, s->s_charisma);
+    ur_write_int(savef, s->s_power);
+    ur_write_int(savef, s->s_str);
+    ur_write_int(savef, s->s_intel);
+    ur_write_int(savef, s->s_wisdom);
+    ur_write_int(savef, s->s_dext);
+    ur_write_int(savef, s->s_const);
+    ur_write_int(savef, s->s_charisma);
 }
 
 struct stats *
@@ -885,13 +902,13 @@ ur_read_stats(FILE *savef)
     s->s_lvl = ur_read_int(savef);
     s->s_arm = ur_read_int(savef);
     s->s_acmod = ur_read_int(savef);
-    s->s_power = ur_read_short(savef);
-    s->s_str = ur_read_short(savef);
-    s->s_intel = ur_read_short(savef);
-    s->s_wisdom = ur_read_short(savef);
-    s->s_dext = ur_read_short(savef);
-    s->s_const = ur_read_short(savef);
-    s->s_charisma = ur_read_short(savef);
+    s->s_power = ur_read_int(savef);
+    s->s_str = ur_read_int(savef);
+    s->s_intel = ur_read_int(savef);
+    s->s_wisdom = ur_read_int(savef);
+    s->s_dext = ur_read_int(savef);
+    s->s_const = ur_read_int(savef);
+    s->s_charisma = ur_read_int(savef);
 
     return(s);
 }
@@ -932,12 +949,12 @@ ur_write_thing(FILE *savef, struct thing *t)
     ur_write_int(savef, t->t_trans);
     ur_write_int(savef, t->t_turn);
     ur_write_int(savef, t->t_wasshot);
-    ur_write_short(savef, t->t_ctype);
-    ur_write_short(savef, t->t_index);
-    ur_write_short(savef, t->t_no_move);
-    ur_write_short(savef, t->t_rest_hpt);
-    ur_write_short(savef, t->t_rest_pow);
-    ur_write_short(savef, t->t_doorgoal);
+    ur_write_int(savef, t->t_ctype);
+    ur_write_int(savef, t->t_index);
+    ur_write_int(savef, t->t_no_move);
+    ur_write_int(savef, t->t_rest_hpt);
+    ur_write_int(savef, t->t_rest_pow);
+    ur_write_int(savef, t->t_doorgoal);
     ur_write_char(savef, t->t_type);
     ur_write_char(savef, t->t_disguise);
     ur_write_char(savef, t->t_oldch);
@@ -981,12 +998,12 @@ ur_read_thing(FILE *savef)
     t->t_trans = ur_read_int(savef);
     t->t_turn = ur_read_int(savef);
     t->t_wasshot = ur_read_int(savef);
-    t->t_ctype = ur_read_short(savef);
-    t->t_index = ur_read_short(savef);
-    t->t_no_move = ur_read_short(savef);
-    t->t_rest_hpt = ur_read_short(savef);
-    t->t_rest_pow = ur_read_short(savef);
-    t->t_doorgoal = ur_read_short(savef);
+    t->t_ctype = ur_read_int(savef);
+    t->t_index = ur_read_int(savef);
+    t->t_no_move = ur_read_int(savef);
+    t->t_rest_hpt = ur_read_int(savef);
+    t->t_rest_pow = ur_read_int(savef);
+    t->t_doorgoal = ur_read_int(savef);
     t->t_type = ur_read_char(savef);
     t->t_disguise = ur_read_char(savef);
     t->t_oldch = ur_read_char(savef);
@@ -1001,12 +1018,12 @@ ur_write_window(FILE *savef, WINDOW *win)
 
     ur_write_long(savef, URS_WINDOW);
 
-    ur_write_short(savef, win->_maxy);
-    ur_write_short(savef, win->_maxx);
+    ur_write_int(savef, win->_maxy);
+    ur_write_int(savef, win->_maxx);
 
     for(i=0; i < win->_maxy; i++)
         for(j = 0; j < win->_maxx; j++)
-            ur_write_short(savef, mvwinch(win,i,j));
+            ur_write_ulong(savef, mvwinch(win,i,j));
 }
 
 void
@@ -1015,18 +1032,17 @@ ur_read_window(FILE *savef, WINDOW *win)
     int i,j;
     int maxy, maxx;
     long id;
-    short value;
 
     id = ur_read_long(savef);
 
     assert(id == URS_WINDOW);
 
-    maxy = ur_read_short(savef);
-    maxx = ur_read_short(savef);
+    maxy = ur_read_int(savef);
+    maxx = ur_read_int(savef);
 
     for(i=0; i < maxy; i++)
         for(j = 0; j < maxx; j++)
-            mvwaddch(win,i,j,ur_read_short(savef));
+            mvwaddch(win,i,j,ur_read_long(savef));
 }
 
 void
@@ -1100,7 +1116,7 @@ ur_read_daemons(FILE *savef)
 void
 save_file(FILE *savef)
 {
-    int i,weapon,armor,ring,room= -1,monster;
+    int i,weapon,armor,ring=0,room= -1,monster;
 
     ur_write_string(savef, save_format);
 
@@ -1246,14 +1262,11 @@ save_file(FILE *savef)
 int
 restore_file(FILE *savef)
 {
-    int i,j,weapon,armor,ring,room,monster;
+    int i,j;
     char *str;
     struct trap *t;
     struct room *r;
     struct thing *p;
-    struct monster *m;
-    struct magic_item *item;
-    struct spells *s;
 
     str = ur_read_string(savef);
 
@@ -1426,6 +1439,7 @@ restore_file(FILE *savef)
     ur_free(str);
 
     DUMPSTRING
+    return(TRUE);
 }
 
 

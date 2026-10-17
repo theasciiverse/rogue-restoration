@@ -17,6 +17,7 @@
 */
 
 #include <ctype.h>
+#include <string.h>
 #include "rogue.h"
 
 /*
@@ -93,7 +94,7 @@ missile(int ydelta, int xdelta, struct linked_list *item, struct thing *tp)
                 fallpos(obj->o_pos, &traps[ntraps].tr_pos))
             {
                 mvaddch(traps[ntraps].tr_pos.y, traps[ntraps].tr_pos.x,
-                    (char)TRAPDOOR);
+                    TRAPDOOR);
                 traps[ntraps].tr_type = TRAPDOOR;
                 traps[ntraps].tr_flags = ISFOUND;
                 traps[ntraps].tr_show = TRAPDOOR;
@@ -169,7 +170,7 @@ do_motion(int ob, int ydelta, int xdelta, struct thing *tp)
             if (cansee(pos.y, pos.x) &&
                 mvwinch(cw, pos.y, pos.x) != ' ')
             {
-                mvwaddch(cw, pos.y, pos.x, (char) ob);
+                mvwaddch(cw, pos.y, pos.x, ob);
                 wrefresh(cw);
             }
 			
@@ -209,7 +210,7 @@ fall(struct thing *tp, struct linked_list *item, int pr, int player_owned)
             && obj->o_which == MOLOTOV
             && ntraps + 1 < 2 * MAXTRAPS)
         {
-            mvaddch(fpos.y, fpos.x, (char) FIRETRAP);
+            mvaddch(fpos.y, fpos.x, FIRETRAP);
             traps[ntraps].tr_type  = FIRETRAP;
             traps[ntraps].tr_flags = ISFOUND;
             traps[ntraps].tr_show  = FIRETRAP;
@@ -403,7 +404,7 @@ fallpos(coord pos, coord *newpos) /*ARGSUSED*/
 	{
         for (x = pos.x - 1; x <= pos.x + 1; x++)
         {
-            switch((int)mvwinch(stdscr,y,x))
+            switch(CCHAR(mvwinch(stdscr,y,x)))
             {
                 case GOLD:
                 case POTION:

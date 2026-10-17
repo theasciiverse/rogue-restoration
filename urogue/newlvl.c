@@ -119,7 +119,7 @@ new_level(LEVTYPE ltype, int special)
     }
     while (!(mvinch(stairs.y, stairs.x) == FLOOR || cnt++ > 5000));
 
-    addch((char)STAIRS);
+    addch(STAIRS);
 
     put_things(ltype);  /* Place objects (if any) */
 
@@ -134,7 +134,7 @@ new_level(LEVTYPE ltype, int special)
     {
         if (rnd(10) < level)
         {
-            char    ch;
+            char    ch = 0;
 
             i = ntraps = min(MAXTRAPS, rnd(level / 2) + 1);
 
@@ -155,7 +155,7 @@ new_level(LEVTYPE ltype, int special)
                 }
                 while (!(mvinch(stairs.y, stairs.x) == FLOOR || cnt++ > 5000));
 
-                addch((char)LAIR);
+                addch(LAIR);
                 i--;
                 traps[i].tr_flags = 0;
                 traps[i].tr_type = LAIR;
@@ -437,7 +437,7 @@ put_things(LEVTYPE ltype)
         for (n = 0; n < rp->r_nexits; n++)
         {
             move(rp->r_exit[n].y, rp->r_exit[n].x);
-            addch((char)SECRETDOOR);
+            addch(SECRETDOOR);
         }
 
         /* Put in the monsters and treasures */

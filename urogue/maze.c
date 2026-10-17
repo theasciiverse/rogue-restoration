@@ -311,23 +311,23 @@ crankout(void)
             if (*moffset(y, x))    /* here is a wall */
             {
                 if (y == 0 || y == LINES - 4)       /* top or bottom line */
-                    addch((char)'-');
+                    addch('-');
                 else if (x == 0 || x == COLS - 2)   /* left | right side */
-                    addch((char)'|');
+                    addch('|');
                 else if (y % 2 == 0 && x % 2 == 0)
                 {
                     if (*moffset(y, x - 1) || *moffset(y, x + 1))
-                        addch((char)'-');
+                        addch('-');
                     else
-                        addch((char)'|');
+                        addch('|');
                 }
                 else if (y % 2 == 0)
-                    addch((char)'-');
+                    addch('-');
                 else
-                    addch((char)'|');
+                    addch('|');
             }
             else
-                addch((char) FLOOR);
+                addch(FLOOR);
         }
     }
 }

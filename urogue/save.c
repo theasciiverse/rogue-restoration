@@ -29,7 +29,6 @@ int
 save_game(void)
 {
     FILE *savefd;
-    int c;
     char    buf[2 * LINELEN];
     char    oldfile[2*LINELEN];
 
@@ -85,7 +84,6 @@ restore(char *file)
 {
     FILE *infd;
     char    *sp;
-    char    buf[2 * LINELEN];
 
     if (strcmp(file, "-r") == 0)
         file = file_name;

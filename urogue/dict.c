@@ -25,7 +25,7 @@ static char sccsid[] = "%W% %G%";
 
 #include <stdlib.h>
 #include <string.h>
-#ifndef OS2
+#if !defined(OS2) && !defined(_WIN32)
    #include <unistd.h>
 #endif
 
@@ -69,7 +69,7 @@ static char sccsid[] = "%W% %G%";
 static unsigned long hash_string(const char *s)
 {
         unsigned long h = 0;
-        unsigned long g;
+        unsigned long g = 0;
 
         while (*s) {
                 h <<= 4;
@@ -368,7 +368,7 @@ STRING_ENTRY *dict_insert(DICTIONARY *dict, char *s,
                 dict->entry_count++;
 
                 /* make sure there is room in the string array */
-                if (dict->array_used + strlen(s) + 1 > dict->array_size) {
+                if (dict->array_used + (long)strlen(s) + 1 > dict->array_size) {
                         dict->array_size = (dict->array_size * 6) / 5;
                         dict->string_array = (char *) realloc(dict->string_array,
                                 dict->array_size);
@@ -379,7 +379,7 @@ STRING_ENTRY *dict_insert(DICTIONARY *dict, char *s,
                 /* fill in starting values */
                 strcpy(&dict->string_array[dict->array_used], s);
                 dict->string_table[string_index].string_offset = dict->array_used;
-                dict->array_used += strlen(s) + 1;
+                dict->array_used += (long) strlen(s) + 1;
                 dict->string_table[string_index].count = 0 ;
                 dict->string_table[string_index].flags = DICT_NONE;
                 dict->string_table[string_index].any_ptr = any_ptr; /* (AK:04/04/95) */
@@ -560,7 +560,7 @@ STRING_ENTRY *dict_search(const DICTIONARY *dict, const char *s,
 *************************************************************************/
 DICTIONARY *dict_union( const DICTIONARY *dict1 , const DICTIONARY *dict2 )
 {
-        DICTIONARY    *dict;
+        DICTIONARY    *dict = NULL;
         STRING_ENTRY  *se, *se2;
         long          initial_string_count, initial_hash_chains, max_chain_length;
         long          i, string_index;
@@ -820,7 +820,7 @@ STRING_ENTRY *dict_scan_next(DICTIONARY *dict)
 *************************************************************************/
 DICTIONARY *dict_load(const char *fname)
 {
-        DICTIONARY       *dict;
+        DICTIONARY       *dict = NULL;
         int              code, index;
         FILE             *fi;
         int              ntoc;
@@ -934,7 +934,7 @@ err_exit:
 BOOLEANC dict_save( DICTIONARY *dict, const char *fname )
 {
         int   index, ret_code;
-        FILE  *fo;
+        FILE  *fo = NULL;
 
         /* Have to be pointing at a valid dictionary */
         if ( dict == NULL || dict->sig->check_value != DICT_VALIDATE )
@@ -1031,7 +1031,7 @@ DICTIONARY *dict_import( const char *dict_fname ,
         char           buffer[BUFLEN], ch;
         int            index, c, c0;
         long           number;
-        FILE           *fi;
+        FILE           *fi = NULL;
 
         /***********
         **  Dictionary setup.
@@ -1121,7 +1121,7 @@ err_exit:
 *************************************************************************/
 BOOLEANC dict_export( DICTIONARY *dict , const char *fname )
 {
-        FILE          *fp;
+        FILE          *fp = NULL;
         STRING_ENTRY  *se;
         int       i;
 
