@@ -88,7 +88,8 @@ reg int (*func)();
  *	Start a daemon, takes a function.
  */
 daemon(func, arg, type)
-reg int arg, type, (*func)();
+reg long arg;
+reg int type, (*func)();
 {
 	reg struct delayed_action *dev;
 
@@ -156,7 +157,8 @@ reg int flag;
  *	Start a fuse to go off in a certain number of turns
  */
 fuse(func, arg, time, type)
-reg int (*func)(), arg, time, type;
+reg int (*func)(), time, type;
+reg long arg;
 {
 	reg struct delayed_action *wire;
 

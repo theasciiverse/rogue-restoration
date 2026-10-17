@@ -1513,8 +1513,16 @@ rs_read_daemons(int inf, struct delayed_action *d_list, int count)
                      break;
         }   
 
-        rs_read_int(inf, &d_list[i].d_arg);
+        rs_read_int(inf, &dummy);	/* Asciiverse: d_arg is a long */
+        d_list[i].d_arg = dummy;
         rs_read_int(inf, &d_list[i].d_time);
+
+        /*
+         * Asciiverse: the pointer saved for doctor() means nothing in
+         * this run; its argument is always the player
+         */
+        if (d_list[i].d_func == doctor)
+            d_list[i].d_arg = (long) &player;
 
 	if (d_list[i].d_func == NULL) 
 	{

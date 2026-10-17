@@ -721,9 +721,13 @@
 struct delayed_action {
 	int d_type;
 	int (*d_func)();
-	int d_arg;
+	long d_arg;	/* Asciiverse: holds &player for doctor(), so not an int */
 	int d_time;
 };
+
+/* Asciiverse: so an int argument reaches them as the long they take */
+int daemon(int (*func)(), long arg, int type);
+int fuse(int (*func)(), long arg, int time, int type);
 
 /* Asciiverse: it returns a pointer, which an int would cut in half */
 struct delayed_action *find_slot();
