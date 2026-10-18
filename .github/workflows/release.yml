@@ -105,5 +105,5 @@ jobs:
         run: |
           gh release view "$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 \
             || gh release create "$TAG" -R "$GITHUB_REPOSITORY" --title "Roguelike Restoration Project $TAG" \
-                 --notes "Rogue 3.6, Rogue 5.2, Super-Rogue 9.0, Advanced Rogue 5.8, UltraRogue and XRogue 8.0 $TAG, from the Roguelike Restoration Project, built for the Asciiverse catalog: one archive per game and target."
+                 --notes "Rogue 3.6, Rogue 5.2 and XRogue 8.0 $TAG, from the Roguelike Restoration Project, built for the Asciiverse catalog: one archive per game and target."
           gh release upload "$TAG" dist/* -R "$GITHUB_REPOSITORY" --clobber
