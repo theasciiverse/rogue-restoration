@@ -186,3 +186,10 @@ and UltraRogue add two clauses to it: their names may not be used to
 endorse or promote derived products, and "Products derived from this
 software may not be called" by their names "without prior written
 permission".
+
+Nicholas J. Kisseberth gave that permission on 2026-10-21: "You can use
+the names if the only modifications are to get them to play in your
+environment." Every change to these three listed above is of that kind
+(building, file locations, the centred screen, 64-bit and memory fixes,
+saved games that restore); keep it so. A change to how they play needs
+a new name, or asking him again.
