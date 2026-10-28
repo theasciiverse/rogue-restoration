@@ -15,6 +15,5 @@ Each game installs on its own:
 | UltraRogue | `av install urogue` | `./urogue` |
 | XRogue | `av install xrogue` | `./xrogue` |
 
-Start one with `av play <name>`, or download its archive for your system from
-this repository's Releases and run it from there.
+Start one with `av play <name>`.
 
