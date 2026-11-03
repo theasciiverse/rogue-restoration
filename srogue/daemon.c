@@ -85,10 +85,10 @@ int (*func)();
 }
 
 /*
- * daemon:
+ * start_daemon:
  *	Start a daemon, takes a function.
  */
-daemon(func, arg, type)
+start_daemon(func, arg, type)
 int arg, type, (*func)();
 {
 	d_insert(func, arg, type, DAEMON);

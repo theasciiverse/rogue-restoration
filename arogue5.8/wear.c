@@ -177,7 +177,7 @@ wear()
 		    msg("wearing %s",inv_name(obj,TRUE));
 		    cur_misc[WEAR_GAUNTLET] = obj;
 		    if (obj->o_which == MM_FUMBLE)
-			daemon(fumble, 0, AFTER);
+			start_daemon(fumble, 0, AFTER);
 		}
 	    /*
 	     * the jewel of attacks does an aggavate monster
@@ -213,7 +213,7 @@ wear()
 		    msg("wearing %s",inv_name(obj,TRUE));
 		    cur_misc[WEAR_NECKLACE] = obj;
 		    msg("The necklace is beginning to strangle you!");
-		    daemon(strangle, 0, AFTER);
+		    start_daemon(strangle, 0, AFTER);
 		}
 	    otherwise:
 		msg("what a strange item you have!");

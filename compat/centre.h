@@ -20,6 +20,11 @@
 #ifndef ASCIIVERSE_CENTRE_H
 #define ASCIIVERSE_CENTRE_H
 
+/* macOS's ncurses 5.7 hides WINDOW's fields by default and has no
+   wgetdelay() yet, so av_wgetch() reads the window's delay itself */
+#if defined(__APPLE__) && !defined(NCURSES_OPAQUE)
+#define NCURSES_OPAQUE 0
+#endif
 #include <curses.h>
 
 /* the size of the field the game plays on, at most 24 x 80 */

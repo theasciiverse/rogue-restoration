@@ -62,6 +62,9 @@ the imports is ours.
   down; a resized terminal moves them to its new centre and shows the
   picture again while the game waits for a key, and a terminal smaller
   than the field shows its top left part until it grows again.
+  On macOS `compat/centre.h` makes ncurses' `WINDOW` fields visible
+  (`NCURSES_OPAQUE` 0): its ncurses 5.7 has no `wgetdelay()`, so
+  `av_wgetch()` reads the window's delay from the window itself.
 - `av_datadir()` and `av_datafile()` give each game its folder,
   `rogue-restoration/<id>` under `$XDG_DATA_HOME`, else
   `~/.local/share`. Nothing is setuid and nothing is written to system
@@ -97,7 +100,8 @@ the imports is ours.
 - Build: the Makefile's files with `WIZARD` and score file
   `rogue52.scr`, without `DUMP` and the load limits that read
   `/dev/kmem`; the suspend handler moves curses' cursor with `wmove()`
-  instead of writing ncurses' opaque fields.
+  instead of writing ncurses' opaque fields; main.c reads
+  `<sys/wait.h>` (macOS has no `<wait.h>`).
 - Files: score file, its lock (was `/tmp/.roguelock`) and saved game
   (`rogue.save`) in the data folder; the score file is made at the first
   score; `file_name` and `save_game()`'s copy hold 1024 bytes; `$HOME` is
@@ -110,7 +114,11 @@ the imports is ours.
 ## srogue (Super-Rogue 9.0)
 
 - Build: the Makefile's files, with `<stdlib.h>` and `<string.h>` read
-  first for its undeclared library calls.
+  first for its undeclared library calls, and without
+  `_FORTIFY_SOURCE`: rogue.ext declares `strcpy()` and `strcat()` again,
+  which macOS's fortified string macros make a syntax error. `daemon()`
+  is `start_daemon()`, as in later Rogues: macOS's `<stdlib.h>` declares
+  `daemon(3)`.
 - Files: score file (`srogue.scr`, was in `$ROGUEHOME`, the first of
   several system folders, or the current folder) and saved game
   (`srogue.sav`) in the data folder; 1024-byte paths; `$HOME` cut to
@@ -127,13 +135,15 @@ the imports is ours.
 
 - Build: the Makefile's files with `<stdlib.h>` and `<string.h>` first;
   mdport.c reads `<term.h>` (Debian and Ubuntu have no
-  `<ncurses/term.h>`); `find_slot()` is declared.
+  `<ncurses/term.h>`); `find_slot()` is declared; `daemon()` is
+  `start_daemon()`, as in later Rogues: macOS's `<stdlib.h>` declares
+  `daemon(3)`.
 - Files: score file (`arogue58.scr`) and saved game (`arogue58.sav`) in
   the data folder; 1024-byte paths; `arogue -r` as before, bare names
   also from the data folder, no `strcpy()` onto itself.
 - 64-bit: daemons kept their argument in an int, so `&player` for
   `doctor()` was cut to 32 bits and the first turn crashed
-  (AddressSanitizer: SEGV in `doctor()`). `d_arg` is a long, `daemon()`
+  (AddressSanitizer: SEGV in `doctor()`). `d_arg` is a long, `start_daemon()`
   and `fuse()` have prototypes, and a restore points `doctor()` at the
   player again.
 - Score file: logins are written as 80 bytes but were read into an
@@ -165,7 +175,8 @@ the imports is ours.
 
 ## xrogue (XRogue 8.0)
 
-- Build: the Makefile's files.
+- Build: the Makefile's files; state.c and command.c read
+  `<sys/wait.h>` (macOS has no `<wait.h>`).
 - Files: score file (was `/usr/games/lib/xrogue_roll`) and saved game
   (`xrogue.save`, was in the home folder) in the data folder; 1024-byte
   paths; `$HOME` and the name cut to fit. `xrogue -r` as before, bare

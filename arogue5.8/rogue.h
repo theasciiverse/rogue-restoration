@@ -726,7 +726,7 @@ struct delayed_action {
 };
 
 /* Asciiverse: so an int argument reaches them as the long they take */
-int daemon(int (*func)(), long arg, int type);
+int start_daemon(int (*func)(), long arg, int type);
 int fuse(int (*func)(), long arg, int time, int type);
 
 /* Asciiverse: it returns a pointer, which an int would cut in half */

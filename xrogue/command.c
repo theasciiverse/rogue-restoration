@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 #ifndef __DJGPP__
-#include <wait.h>
+#include <sys/wait.h>
 #endif
 #include "mach_dep.h"
 #include "rogue.h"

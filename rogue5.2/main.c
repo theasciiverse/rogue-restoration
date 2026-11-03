@@ -16,7 +16,7 @@
 #include <signal.h>
 #include <pwd.h>
 #include <unistd.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <time.h>
 #include "rogue.h"
 

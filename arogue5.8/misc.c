@@ -700,7 +700,7 @@ int which;
 		 * if he becomes a thief then add the trap_look() daemon
 		 */
 		if (obj->o_ac == C_THIEF)
-		    daemon(trap_look, 0, AFTER);
+		    start_daemon(trap_look, 0, AFTER);
 		char_type = player.t_ctype = obj->o_ac;
 		save = pstats.s_hpt;
 		max_stats.s_hpt = pstats.s_hpt = 0;

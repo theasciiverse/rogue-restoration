@@ -82,9 +82,9 @@ register struct object *obj;
 		}
 	    }
 	when R_SEARCH:
-		daemon(ring_search, 0, AFTER);
+		start_daemon(ring_search, 0, AFTER);
 	when R_TELEPORT:
-		daemon(ring_teleport, 0, AFTER);
+		start_daemon(ring_teleport, 0, AFTER);
     }
     status(FALSE);
     if (r_know[obj->o_which] && r_guess[obj->o_which])
