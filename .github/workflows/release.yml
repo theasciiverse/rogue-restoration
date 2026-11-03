@@ -17,7 +17,7 @@ name: release
 
 on:
   push:
-    tags: ["*"]
+    tags: ["v*-av.*"]
   workflow_dispatch:
     inputs:
       tag:
